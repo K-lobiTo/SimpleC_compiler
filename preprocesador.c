@@ -8,6 +8,8 @@
 #define MAX_LINE_LENGTH 1024
 #define DEBUG(v) printf("%s\n", v)
 
+#define PRUEBA /*esto es prueba*/ "prueba"
+
 typedef struct {
     char *name;
     char *value;
@@ -15,6 +17,7 @@ typedef struct {
 
 Define defines[MAX_DEFINES];
 int num_defines = 0;
+bool open_comment = 0;
 
 bool is_identifier_char(char c) {
     return isalnum(c) || c == '_';
@@ -32,7 +35,7 @@ void add_define(const char *name, const char *value) {
             // Verificar que sea un identificador completo
             if (!is_identifier_char(name[len])) {
                 defines[i].value = strdup(value? newval : "");
-                DEBUG(defines[i].value);
+                // DEBUG(defines[i].value);
                 return;
             }
         }
@@ -42,14 +45,16 @@ void add_define(const char *name, const char *value) {
     defines[num_defines].value = strdup(value ? newval : "");
     // defines[num_defines].value = strdup(value ? value : "");
     num_defines++;
+    // printf("%d numdefines\n", num_defines);
 }
 
 void process_file(const char *filename, FILE *output, bool is_include);
 
 void process_include(const char *filename, FILE *output) {
-    fprintf(output, "\n// Begin include %s\n", filename);
+    
+    // fprintf(output, "\n// Begin include %s\n", filename); // show begin and end of include
     process_file(filename, output, true);
-    fprintf(output, "\n// End include %s\n", filename);
+    // fprintf(output, "\n// End include %s\n", filename);
 }
 
 
@@ -120,10 +125,45 @@ char* apply_macros(const char *line) {
     return final_result ? final_result : result;
 }
 
+void process_comments(char *line){
+    while(open_comment && line){ // segment comments
+        if(*line=='*' && line[1]=='/'){//maybe I should verify (line++)
+            open_comment = 0;
+            line++;
+        }
+        line++;
+    }
+
+    char *single_line = line;
+    while(single_line[1] != '\0'){
+        if(open_comment && single_line){
+            if(*single_line == '*' && single_line[1] == '/'){
+                single_line[1] = ' '; 
+                open_comment = 0;
+            }
+            *single_line = ' ';
+        }
+        else if(*single_line == '/' && single_line[1] == '/'){
+            *single_line = '\n';
+            single_line[1] = '\0';
+            return;
+        }
+        else if(*single_line == '/' && single_line[1] == '*'){
+            open_comment = 1;
+            single_line[1] = ' ';
+            single_line--;
+        }
+        single_line++;
+    }
+
+}
+
 
 void process_line(char *line, FILE *output, bool is_include) {
     char *trimmed = line;
+    process_comments(trimmed);
     while (isspace(*trimmed)) trimmed++;
+    if(*trimmed == '\0')return;
 
     if (strncmp(trimmed, "#include", 8) == 0) {
         char *start = strchr(trimmed, '"');
@@ -154,9 +194,9 @@ void process_line(char *line, FILE *output, bool is_include) {
         add_define(rest, value);
         *name_end = saved;
         
-        if (is_include) {
-            fputs(line, output);
-        }
+        // if (is_include) { //adding the #define declaration anyway
+        //     fputs(line, output);
+        // }
     }
     else {
         expand_macros(line, output);
@@ -171,6 +211,7 @@ void process_file(const char *filename, FILE *output, bool is_include) {
     }
 
     char line[MAX_LINE_LENGTH];
+    open_comment = 0;
     while (fgets(line, sizeof(line), file)) {
         process_line(line, output, is_include);
     }
@@ -179,6 +220,7 @@ void process_file(const char *filename, FILE *output, bool is_include) {
 }
 
 int main(int argc, char *argv[]) {
+    DEBUG(PRUEBA);
     if (argc != 3) {
         fprintf(stderr, "Usage: %s <input.c> <output.c>\n", argv[0]);
         return 1;
