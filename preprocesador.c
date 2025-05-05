@@ -125,9 +125,10 @@ char* apply_macros(const char *line) {
     return final_result ? final_result : result;
 }
 
-void process_comments(char *line){
-    while(open_comment && line){ // segment comments
-        if(*line=='*' && line[1]=='/'){//maybe I should verify (line++)
+char* process_comments(char *line){
+    while(open_comment && (line[1]!='\0')){ // segment comments
+        // DEBUG("Commented char in other lane");
+        if(*line=='*' && line[1]=='/'){
             open_comment = 0;
             line++;
         }
@@ -135,8 +136,9 @@ void process_comments(char *line){
     }
 
     char *single_line = line;
-    while(single_line[1] != '\0'){
+    while(single_line[1] != '\0'){//single line and segment commments
         if(open_comment && single_line){
+            // DEBUG("commented char");
             if(*single_line == '*' && single_line[1] == '/'){
                 single_line[1] = ' '; 
                 open_comment = 0;
@@ -146,7 +148,7 @@ void process_comments(char *line){
         else if(*single_line == '/' && single_line[1] == '/'){
             *single_line = '\n';
             single_line[1] = '\0';
-            return;
+            return line;
         }
         else if(*single_line == '/' && single_line[1] == '*'){
             open_comment = 1;
@@ -155,13 +157,15 @@ void process_comments(char *line){
         }
         single_line++;
     }
-
+    return line;
 }
 
 
 void process_line(char *line, FILE *output, bool is_include) {
-    char *trimmed = line;
-    process_comments(trimmed);
+    // char *trimmed = line;
+    char *trimmed = process_comments(line);
+    
+    // DEBUG(trimmed);
     while (isspace(*trimmed)) trimmed++;
     if(*trimmed == '\0')return;
 
@@ -199,7 +203,7 @@ void process_line(char *line, FILE *output, bool is_include) {
         // }
     }
     else {
-        expand_macros(line, output);
+        expand_macros(trimmed, output);
     }
 }
 
@@ -220,7 +224,6 @@ void process_file(const char *filename, FILE *output, bool is_include) {
 }
 
 int main(int argc, char *argv[]) {
-    DEBUG(PRUEBA);
     if (argc != 3) {
         fprintf(stderr, "Usage: %s <input.c> <output.c>\n", argv[0]);
         return 1;
