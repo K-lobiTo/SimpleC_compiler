@@ -182,6 +182,9 @@ EXP      [Ee][+-]?{DIGIT}+
     }
     \\n     { strcat(string_buf, "\n"); string_buf_size++; }
     \\t     { strcat(string_buf, "\t"); string_buf_size++; }
+    \\r     { strcat(string_buf, "\r"); string_buf_size++; }  // Nuevas secuencias
+    \\b     { strcat(string_buf, "\b"); string_buf_size++; }
+    \\f     { strcat(string_buf, "\f"); string_buf_size++; }
     \\\"    { strcat(string_buf, "\""); string_buf_size++; }
     \\\\    { strcat(string_buf, "\\"); string_buf_size++; }
     \\.     { lexical_error("Secuencia de escape inválida"); }
