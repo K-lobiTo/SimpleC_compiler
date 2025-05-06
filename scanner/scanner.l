@@ -56,6 +56,17 @@ EXP      [Ee][+-]?{DIGIT}+
 "void"      { return TOK_VOID; }
 "volatile"  { return TOK_VOLATILE; }
 "while"     { return TOK_WHILE; }
+/* Palabras clave añadidas */
+"bool"          { return TOK_BOOL; }
+"true"          { yylval.bool_val = true; return TOK_BOOL_LITERAL; } // Como literal booleano
+"false"         { yylval.bool_val = false; return TOK_BOOL_LITERAL; }
+"restrict"      { return TOK_RESTRICT; }
+"inline"        { return TOK_INLINE; }
+"_Complex"      { return TOK_COMPLEX; }
+"_Imaginary"    { return TOK_IMAGINARY; }
+"_Thread_local" { return TOK_THREAD_LOCAL; }
+"_Atomic"       { return TOK_ATOMIC; }
+"_Noreturn"     { return TOK_NORETURN; }
 
  /* ========== OPERADORES Y SÍMBOLOS ========== */
 "+"         { return TOK_PLUS; }
@@ -92,6 +103,38 @@ EXP      [Ee][+-]?{DIGIT}+
 ":"         { return TOK_COLON; }
 ","         { return TOK_COMMA; }
 "..."       { return TOK_ELLIPSIS; }
+
+ /* ========== LITERALES ENTEROS CON SUFIJOS ========== */
+0[xX]{HEX}+{SUFFIX}? {
+    char *end;
+    yylval.ll_val = strtoll(yytext, &end, 16);
+    yylval.suffix = strdup(end);  // Almacena el sufijo (ej. "ULL")
+    return TOK_INT_LITERAL;
+}
+
+0{OCTAL}+{SUFFIX}? {
+    char *end;
+    yylval.ll_val = strtoll(yytext, &end, 8);
+    yylval.suffix = strdup(end);
+    return TOK_INT_LITERAL;
+}
+
+{DIGIT}+{SUFFIX}? {
+    char *end;
+    yylval.ll_val = strtoll(yytext, &end, 10);
+    yylval.suffix = strdup(end);
+    return TOK_INT_LITERAL;
+}
+
+ /* ========== LITERALES FLOTANTES (incluye long double) ========== */
+{DIGIT}+"."{DIGIT}*{EXP}?[fFlL]? {
+    if (strchr(yytext, 'L') || strchr(yytext, 'l')) {
+        yylval.long_double_val = strtold(yytext, NULL); // Para long double
+    } else {
+        yylval.double_val = strtod(yytext, NULL);       // Para double
+    }
+    return TOK_FLOAT_LITERAL;
+}
 
  /* ========== LITERALES Y IDENTIFICADORES ========== */
 {ID}        {
