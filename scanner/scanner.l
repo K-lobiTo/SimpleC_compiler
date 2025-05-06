@@ -20,6 +20,7 @@ HEX      [0-9a-fA-F]
 OCTAL    [0-7]
 ID       [a-zA-Z_][a-zA-Z0-9_]*
 EXP      [Ee][+-]?{DIGIT}+
+SUFFIX     [uUlL]{1,3}  // Sufijos para enteros: U, L, UL, etc.
 
 %%
 
@@ -58,7 +59,7 @@ EXP      [Ee][+-]?{DIGIT}+
 "while"     { return TOK_WHILE; }
 /* Palabras clave añadidas */
 "bool"          { return TOK_BOOL; }
-"true"          { yylval.bool_val = true; return TOK_BOOL_LITERAL; } // Como literal booleano
+"true"          { yylval.bool_val = true; return TOK_BOOL_LITERAL; }
 "false"         { yylval.bool_val = false; return TOK_BOOL_LITERAL; }
 "restrict"      { return TOK_RESTRICT; }
 "inline"        { return TOK_INLINE; }
