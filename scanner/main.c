@@ -110,6 +110,6 @@ int main(int argc, char* argv[]) {
         }
         printf("\n");
     } while (token.type != TOK_EOF);
-
+    print_token_counts();
     return 0;
 }

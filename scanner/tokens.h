@@ -48,7 +48,9 @@ typedef enum {
     TOK_CHAR_LITERAL,   TOK_BOOL_LITERAL,
 
     // ========== ERRORES Y FIN DE ARCHIVO ==========
-    TOK_ERROR,          TOK_EOF
+    TOK_ERROR,          TOK_EOF,
+
+    TOK_COUNT // Añadir al final para obtener el total
 
 } TokenType;
 
@@ -65,5 +67,6 @@ typedef struct {
 // Prototipos de funciones
 Token Get_Token(void);
 void init_scanner(const char* filename);
+void print_token_counts(void);
 
 #endif
