@@ -22,6 +22,10 @@ typedef enum {
     TOK_SHORT,      TOK_SIGNED,     TOK_SIZEOF,     TOK_STATIC,
     TOK_STRUCT,     TOK_SWITCH,     TOK_TYPEDEF,    TOK_UNION,
     TOK_UNSIGNED,   TOK_VOID,       TOK_VOLATILE,   TOK_WHILE,
+    // Palabras clave añadidas
+    TOK_LONG_LONG,  TOK_LONG_DOUBLE, TOK_BOOL,      TOK_TRUE,
+    TOK_FALSE,      TOK_RESTRICT,    TOK_INLINE,    TOK_COMPLEX,
+    TOK_IMAGINARY,  TOK_THREAD_LOCAL, TOK_ATOMIC,   TOK_NORETURN,
 
     // ========== OPERADORES Y SÍMBOLOS ==========
     TOK_PLUS,       TOK_MINUS,      TOK_MULT,       TOK_DIV,
@@ -37,6 +41,8 @@ typedef enum {
     // ========== LITERALES E IDENTIFICADORES ==========
     TOK_IDENTIFIER,     TOK_INT_LITERAL,
     TOK_FLOAT_LITERAL,  TOK_STRING_LITERAL,
+    // Literales añadidos
+    TOK_CHAR_LITERAL,   TOK_BOOL_LITERAL,
 
     // ========== ERRORES Y FIN DE ARCHIVO ==========
     TOK_ERROR,          TOK_EOF
