@@ -6,6 +6,9 @@ typedef union {
     char* lexeme;
     int int_val;
     float float_val;
+    long long ll_val;       // Para enteros largos
+    char* suffix;           // Sufijos como "ULL"
+    _Bool bool_val;         // Literales booleanos
 } YYSTYPE;
 
 extern YYSTYPE yylval;  // Declaración externa
