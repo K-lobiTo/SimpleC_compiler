@@ -22,6 +22,14 @@ Token Get_Token(void) {
         case TOK_STRING_LITERAL:
             token.lexeme = strdup(yylval.lexeme);
             break;
+        case TOK_FLOAT_LITERAL:
+            token.lexeme = NULL;
+            token.value.float_val = yylval.float_val;
+            break;
+        case TOK_INT_LITERAL:
+            token.lexeme = NULL;
+            token.value.int_val = yylval.int_val;
+            break;
         case TOK_EOF:
             fclose(yyin); // Cierra el archivo
             token.lexeme = NULL;

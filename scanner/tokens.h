@@ -3,11 +3,9 @@
 
 // Definir YYSTYPE para Flex
 typedef union {
-    char* lexeme;       // Para identificadores y cadenas
-    struct {
-        int int_val;    // Valor entero
-        float float_val; // Valor flotante
-    } value;             // Estructura anidada
+    char* lexeme;
+    int int_val;
+    float float_val;
 } YYSTYPE;
 
 extern YYSTYPE yylval;  // Declaración externa

@@ -1225,7 +1225,7 @@ case 68:
 YY_RULE_SETUP
 #line 104 "scanner.l"
 {
-    yylval.value.int_val = strtol(yytext, NULL, 16);
+    yylval.int_val = strtol(yytext, NULL, 16);
     return TOK_INT_LITERAL;
 }
 	YY_BREAK
@@ -1233,7 +1233,7 @@ case 69:
 YY_RULE_SETUP
 #line 109 "scanner.l"
 {
-    yylval.value.int_val = strtol(yytext, NULL, 8);
+    yylval.int_val = strtol(yytext, NULL, 8);
     return TOK_INT_LITERAL;
 }
 	YY_BREAK
@@ -1242,7 +1242,7 @@ case 70:
 YY_RULE_SETUP
 #line 115 "scanner.l"
 {
-    yylval.value.int_val = atoi(yytext); // Acceso correcto
+    yylval.int_val = atoi(yytext); // Acceso correcto
     return TOK_INT_LITERAL;
 }
 	YY_BREAK
@@ -1252,7 +1252,7 @@ case 71:
 YY_RULE_SETUP
 #line 122 "scanner.l"
 {
-    yylval.value.float_val = atof(yytext); // Acceso correcto
+    yylval.float_val = atof(yytext); // Acceso correcto
     return TOK_FLOAT_LITERAL;
 }
 	YY_BREAK

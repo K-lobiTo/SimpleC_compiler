@@ -101,25 +101,25 @@ EXP      [Ee][+-]?{DIGIT}+
 
  /* Enteros (decimal, octal, hexadecimal) */
 0[xX]{HEX}+ {
-    yylval.value.int_val = strtol(yytext, NULL, 16);
+    yylval.int_val = strtol(yytext, NULL, 16);
     return TOK_INT_LITERAL;
 }
 
 0{OCTAL}+   {
-    yylval.value.int_val = strtol(yytext, NULL, 8);
+    yylval.int_val = strtol(yytext, NULL, 8);
     return TOK_INT_LITERAL;
 }
 
  /* Literales enteros */
 {DIGIT}+ {
-    yylval.value.int_val = atoi(yytext); // Acceso correcto
+    yylval.int_val = atoi(yytext); // Acceso correcto
     return TOK_INT_LITERAL;
 }
 
  /* Flotantes */
  /* Literales flotantes */
 {DIGIT}+"."{DIGIT}*{EXP}? {
-    yylval.value.float_val = atof(yytext); // Acceso correcto
+    yylval.float_val = atof(yytext); // Acceso correcto
     return TOK_FLOAT_LITERAL;
 }
 
