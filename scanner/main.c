@@ -1,4 +1,5 @@
 #include "tokens.h"
+
 #include <stdio.h>
 
 
@@ -27,6 +28,13 @@ int main(int argc, char* argv[]) {
         }
         printf("\n");
     } while (token.type != TOK_EOF);
-    print_token_counts();
+    // print_token_counts();
+    TokenCount cantidades = getTokenCount();
+    for (int i = 0; i < TOK_COUNT; i++) {
+        if (cantidades.token_count[i] >= 0) {
+            printf("%-20s: %d : my i: %d\n", tTypeToStr(i), cantidades.token_count[i], i);
+        }
+    }
+
     return 0;
 }
