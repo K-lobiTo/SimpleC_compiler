@@ -118,10 +118,41 @@ EXP      [Ee][+-]?{DIGIT}+
 
  /* Flotantes */
  /* Literales flotantes */
-{DIGIT}+"."{DIGIT}*{EXP}? {
-    yylval.float_val = atof(yytext); // Acceso correcto
+({DIGIT}+\.?{DIGIT}*|\.{DIGIT}+){EXP}?[fFlL]? {
+    yylval.float_val = strtold(yytext, NULL); // Acceso correcto
     return TOK_FLOAT_LITERAL;
 }
+
+
+ /* ========== CHAR ========== */
+
+\'(\\.|[^\\\'])\' {
+    // Handle escape sequences
+    if (yytext[1] == '\\') {
+        switch(yytext[2]) {
+            case 'n': yylval.int_val = '\n'; break;
+            case 't': yylval.int_val = '\t'; break;
+            case 'r': yylval.int_val = '\r'; break;
+            case '\\': yylval.int_val = '\\'; break;
+            case '\'': yylval.int_val = '\''; break;
+            case '"': yylval.int_val = '\"'; break;
+            case 'x':  // Hex escape
+                yylval.int_val = strtol(yytext+3, NULL, 16);
+                break;
+            case '0'...'7':  // Octal escape
+                yylval.int_val = strtol(yytext+1, NULL, 8);
+                break;
+            default:
+                lexical_error("Invalid escape sequence");
+                return TOK_ERROR;
+        }
+    } else {
+        yylval.int_val = (unsigned char)yytext[1];
+    }
+    return TOK_CHAR_LITERAL;
+}
+\'[^\']*\'    { lexical_error("Invalid character literal"); return TOK_ERROR; }
+
 
  /* Cadenas con caracteres escapados */
 \" {
@@ -172,11 +203,6 @@ EXP      [Ee][+-]?{DIGIT}+
 [ \t\r]+    { /* Ignorar espacios y tabs */ }
 \n          { current_line++; }
 
- /* ========== MANEJO DE ERRORES ========== */
-.           {
-    lexical_error("Carácter no reconocido");
-    return TOK_ERROR;
-}
 
 <<EOF>> {return TOK_EOF;}
 

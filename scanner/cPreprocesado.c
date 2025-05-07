@@ -7,6 +7,7 @@ return a + b;
 double numPi = 3.1416;
 double dosPi = 3.1416 * 2;
 long long mesi= "testmessi"; 
+char testchar = '\n';
 char* mesi2 = "testmessi2"; 
 int r == 5;
 return 0;

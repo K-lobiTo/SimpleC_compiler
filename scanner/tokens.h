@@ -4,9 +4,8 @@
 // Definir YYSTYPE para Flex
 typedef union {
     char* lexeme;
-    int int_val;
-    float float_val;
-    long long ll_val;       // Para enteros largos
+    long long int_val;
+    long double float_val;
     char* suffix;           // Sufijos como "ULL"
     _Bool bool_val;         // Literales booleanos
 } YYSTYPE;
@@ -59,8 +58,8 @@ typedef struct {
     char* lexeme;        // Lexema (cadena del token)
     int line;            // Número de línea
     union {
-        int int_val;     // Valor numérico entero
-        float float_val; // Valor numérico flotante
+        long long int_val;     // Valor numérico entero
+        long double float_val; // Valor numérico flotante
     } value;
 } Token;
 
@@ -68,5 +67,7 @@ typedef struct {
 Token Get_Token(void);
 void init_scanner(const char* filename);
 void print_token_counts(void);
+char* tTypeToStr(TokenType t); 
+
 
 #endif

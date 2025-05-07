@@ -12,7 +12,7 @@ extern FILE* yyin;
 
 static int token_counts[TOK_COUNT] = {0}; // Array de contadores
 
-char* tTypeToStrS(TokenType t) {
+char* tTypeToStr(TokenType t) {
     switch (t) {
         // ========== PALABRAS CLAVE ==========
         case TOK_AUTO:       return "TOK_AUTO";
@@ -90,6 +90,10 @@ char* tTypeToStrS(TokenType t) {
         case TOK_FLOAT_LITERAL:  return "TOK_FLOAT_LITERAL";
         case TOK_STRING_LITERAL: return "TOK_STRING_LITERAL";
 
+    // Literales añadidos
+        case TOK_CHAR_LITERAL: return "TOK_CHAR_LITERAL";
+        case TOK_BOOL_LITERAL: return "TOK_BOOL_LITERAL";
+
         // ========== ERRORES Y FIN DE ARCHIVO ==========
         case TOK_ERROR:          return "TOK_ERROR";
         case TOK_EOF:            return "TOK_EOF";
@@ -124,6 +128,11 @@ Token Get_Token(void) {
             token.lexeme = NULL;
             token.value.int_val = yylval.int_val;
             break;
+        case TOK_CHAR_LITERAL:
+            token.lexeme = NULL;
+            token.value.int_val = yylval.int_val;
+            break;
+
         case TOK_EOF:
             fclose(yyin); // Cierra el archivo
             token.lexeme = NULL;
@@ -139,7 +148,7 @@ Token Get_Token(void) {
 void print_token_counts() {
     for (int i = 0; i < TOK_COUNT; i++) {
         if (token_counts[i] > 0) {
-            printf("%-20s: %d\n", tTypeToStrS(i), token_counts[i]);
+            printf("%-20s: %d\n", tTypeToStr(i), token_counts[i]);
         }
     }
 }
