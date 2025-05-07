@@ -1,0 +1,10 @@
+\frametitle{Programa después del preproceso}\framesubtitle {}
+
+  \begin{lstlisting}[style=mycstyle]
+int main() {
+    float x = 3.14;
+    char* s = "Hola Mundo";
+    if (x <= 0x1F) {
+        return 0;
+    }
+}  \end{lstlisting}

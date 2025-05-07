@@ -7,5 +7,5 @@ add_executable(scanner main.c
         tokens.h
         scanner.c
         cPreprocesado.c
-        ejemplo.c
+        preprocesado.c
 )
