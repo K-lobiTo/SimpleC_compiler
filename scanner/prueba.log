@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.5.5)  7 MAY 2025 11:18
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.5.5)  8 MAY 2025 08:25
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1137,18 +1137,14 @@ Package pdftex.def Info: logoTEC.png  used on input line 415.
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `prueba.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 27181 strings out of 474222
- 528165 string characters out of 5748734
+ 27197 strings out of 474222
+ 528299 string characters out of 5748734
  2002975 words of memory out of 5000000
- 48859 multiletter control sequences out of 15000+600000
+ 48875 multiletter control sequences out of 15000+600000
  567396 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,16n,123p,559b,1353s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1163,7 +1159,7 @@ blic/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
 msfonts/cm/cmti12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
 s/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
 mtt8.pfb>
-Output written on prueba.pdf (15 pages, 285714 bytes).
+Output written on prueba.pdf (15 pages, 285949 bytes).
 PDF statistics:
  507 PDF objects out of 1000 (max. 8388607)
  437 compressed objects within 5 object streams

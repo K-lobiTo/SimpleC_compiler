@@ -3,12 +3,17 @@
 #include <unistd.h>
 
 void generar_beamer_variables(int cantidades[]) {
-        // 1. Crear archivo prueba.tex
     FILE *f = fopen("prueba.tex", "w");
     if (!f) {
         perror("Error al crear prueba.tex");
         return;
     }
+    int keyboard = 0, operadores = 0, literales = 0, errores = 0;
+    int i;
+    for (i = 0; i < 44; i++) keyboard =+ cantidades[i];
+    for (; i<78; i++) operadores =+ cantidades[i];
+    for (; i < 84; i++) literales =+ cantidades[i];
+    errores = cantidades[84]+cantidades[85];
 
     fprintf(f,
         "\\documentclass{beamer}\n"
@@ -23,10 +28,10 @@ void generar_beamer_variables(int cantidades[]) {
     "\\usefonttheme{serif}\n"
     "\\usecolortheme{rose}\n\n"
 
-    "\\newcommand{\\keyword}{5}\n"
-    "\\newcommand{\\operadoresysimbolos}{90}\n"
-    "\\newcommand{\\literaleseidentificadores}{18}\n"
-    "\\newcommand{\\erroresyfindearchivo}{22}\n\n"
+    "\\newcommand{\\keyword}{%d}\n"
+    "\\newcommand{\\operadoresysimbolos}{%d}\n"
+    "\\newcommand{\\literaleseidentificadores}{%d}\n"
+    "\\newcommand{\\erroresyfindearchivo}{%d}\n\n"
 
     "\\newcommand{\\tokauto}{%d}\n"
     "\\newcommand{\\tokbreak}{%d}\n"
@@ -185,9 +190,8 @@ void generar_beamer_variables(int cantidades[]) {
     " \\item<2-> \\textbf{Generación de código C:} Flex toma estas reglas y genera un archivo fuente en C que contiene la implementación del analizador léxico. Este archivo contiene la lógica para encontrar y procesar los patrones definidos en las reglas.\n"
     " \\item<3> \\textbf{Compilación y uso:} El archivo fuente en C generado por Flex se compila con un compilador de C y se utiliza para crear un programa que realiza la tarea de analizar léxicamente el texto de entrada.\n"
     "\\end{enumerate}\n"
-    "\\end{frame}\n\n"
-
-    /*"\\end{document}\n\n}"*/,
+    "\\end{frame}\n\n",
+    keyboard, operadores , literales , errores,
     cantidades[0],
     cantidades[1],
     cantidades[2],
@@ -277,7 +281,7 @@ void generar_beamer_variables(int cantidades[]) {
 );
 
 
-    //2. Ahora lo que sigue es escribir el codigo de c aquí y luego en el latex
+    //ahora lo que sigue es escribir el codigo de c aquí y luego en el latex
     fprintf(f,
         "\\begin{frame}[fragile]{Programa después del preproceso}{}\n\n"
         "  \\begin{lstlisting}[style=mycstyle]\n"
@@ -293,8 +297,6 @@ void generar_beamer_variables(int cantidades[]) {
     char buffer[1024];
     int linea = 0;
     while (linea < 23 && fgets(buffer, 1024, f_prepro)) {
-        // Directamente escribimos la línea tal cual,
-        // el entorno lstlisting se encarga de verbatim.
         fputs(buffer, f);
         linea++;
     }
