@@ -63,11 +63,16 @@ typedef struct {
     } value;
 } Token;
 
+typedef struct {
+    int token_count[TOK_COUNT]; 
+} TokenCount;
+
 // Prototipos de funciones
 Token Get_Token(void);
+TokenCount getTokenCount();
 void init_scanner(const char* filename);
 void print_token_counts(void);
-char* tTypeToStr(TokenType t); 
+const char* tTypeToStr(TokenType t); 
 
 
 #endif

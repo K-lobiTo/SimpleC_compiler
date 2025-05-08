@@ -537,8 +537,8 @@ void generar_beamer_variables(int cantidades[]) {
 
 }
 
-void generar_beamer(int arreglo_prueba[]) {
-    generar_beamer_variables(arreglo_prueba);
+void generar_beamer(int arreglo_cantidades[]) {
+    generar_beamer_variables(arreglo_cantidades);
     // 2. Compilar el archivo .tex de manera silenciosa
     if (system("pdflatex -interaction=nonstopmode prueba.tex > /dev/null 2>&1") != 0) {
         fprintf(stderr, "Error al compilar prueba.tex\n");
