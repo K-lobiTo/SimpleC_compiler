@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.5.5)  8 MAY 2025 08:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.5.5)  9 MAY 2025 10:45
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1006,21 +1006,37 @@ File: lstlang1.sty 2023/02/27 1.9 listings language file
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2023/02/27 1.9 (Carsten Heinz)
-))
+)
+LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <8> not available
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 7.
+)
+Overfull \vbox (13.85814pt too high) detected at line 207
+ []
+
 File: logoTEC.png Graphic file (type png)
 <use logoTEC.png>
-Package pdftex.def Info: logoTEC.png  used on input line 190.
+Package pdftex.def Info: logoTEC.png  used on input line 207.
 (pdftex.def)             Requested size: 61.13646pt x 14.22636pt.
- [7
+[7
 
 ]
-LaTeX Font Info:    Trying to load font information for U+msa on input line 210
+\openout4 = `prueba.vrb'.
+
+ (./prueba.vrb)
+File: logoTEC.png Graphic file (type png)
+<use logoTEC.png>
+Package pdftex.def Info: logoTEC.png  used on input line 226.
+(pdftex.def)             Requested size: 61.13646pt x 14.22636pt.
+ [8
+
+]
+LaTeX Font Info:    Trying to load font information for U+msa on input line 246
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 210
+LaTeX Font Info:    Trying to load font information for U+msb on input line 246
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -1028,39 +1044,23 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 File: logoTEC.png Graphic file (type png)
 <use logoTEC.png>
-Package pdftex.def Info: logoTEC.png  used on input line 210.
+Package pdftex.def Info: logoTEC.png  used on input line 246.
 (pdftex.def)             Requested size: 61.13646pt x 14.22636pt.
- [8
+ [9
 
 ]
-Overfull \hbox (4.84508pt too wide) in paragraph at lines 252--252
+Overfull \hbox (4.84508pt too wide) in paragraph at lines 288--288
  []|\OT1/cmr/bx/n/10.95 Cantidad| 
  []
 
 
-Overfull \hbox (4.84508pt too wide) in paragraph at lines 252--252
+Overfull \hbox (4.84508pt too wide) in paragraph at lines 288--288
  []|\OT1/cmr/bx/n/10.95 Cantidad| 
  []
 
 File: logoTEC.png Graphic file (type png)
 <use logoTEC.png>
-Package pdftex.def Info: logoTEC.png  used on input line 252.
-(pdftex.def)             Requested size: 61.13646pt x 14.22636pt.
-[9
-
-]
-Overfull \hbox (4.84508pt too wide) in paragraph at lines 290--290
- []|\OT1/cmr/bx/n/10.95 Cantidad| 
- []
-
-
-Overfull \hbox (4.84508pt too wide) in paragraph at lines 290--290
- []|\OT1/cmr/bx/n/10.95 Cantidad| 
- []
-
-File: logoTEC.png Graphic file (type png)
-<use logoTEC.png>
-Package pdftex.def Info: logoTEC.png  used on input line 290.
+Package pdftex.def Info: logoTEC.png  used on input line 288.
 (pdftex.def)             Requested size: 61.13646pt x 14.22636pt.
 [10
 
@@ -1074,11 +1074,6 @@ Overfull \hbox (4.84508pt too wide) in paragraph at lines 326--326
  []|\OT1/cmr/bx/n/10.95 Cantidad| 
  []
 
-
-Overfull \hbox (0.58206pt too wide) in paragraph at lines 326--326
-[]|\OT1/cmr/m/n/10.95 complement| 
- []
-
 File: logoTEC.png Graphic file (type png)
 <use logoTEC.png>
 Package pdftex.def Info: logoTEC.png  used on input line 326.
@@ -1086,41 +1081,62 @@ Package pdftex.def Info: logoTEC.png  used on input line 326.
 [11
 
 ]
-Overfull \hbox (4.84508pt too wide) in paragraph at lines 360--360
+Overfull \hbox (4.84508pt too wide) in paragraph at lines 362--362
  []|\OT1/cmr/bx/n/10.95 Cantidad| 
  []
 
 
-Overfull \hbox (4.84508pt too wide) in paragraph at lines 360--360
+Overfull \hbox (4.84508pt too wide) in paragraph at lines 362--362
  []|\OT1/cmr/bx/n/10.95 Cantidad| 
+ []
+
+
+Overfull \hbox (0.58206pt too wide) in paragraph at lines 362--362
+[]|\OT1/cmr/m/n/10.95 complement| 
  []
 
 File: logoTEC.png Graphic file (type png)
 <use logoTEC.png>
-Package pdftex.def Info: logoTEC.png  used on input line 360.
+Package pdftex.def Info: logoTEC.png  used on input line 362.
 (pdftex.def)             Requested size: 61.13646pt x 14.22636pt.
 [12
 
 ]
+Overfull \hbox (4.84508pt too wide) in paragraph at lines 396--396
+ []|\OT1/cmr/bx/n/10.95 Cantidad| 
+ []
+
+
+Overfull \hbox (4.84508pt too wide) in paragraph at lines 396--396
+ []|\OT1/cmr/bx/n/10.95 Cantidad| 
+ []
+
 File: logoTEC.png Graphic file (type png)
 <use logoTEC.png>
-Package pdftex.def Info: logoTEC.png  used on input line 390.
+Package pdftex.def Info: logoTEC.png  used on input line 396.
 (pdftex.def)             Requested size: 61.13646pt x 14.22636pt.
- [13
+[13
 
 ]
 File: logoTEC.png Graphic file (type png)
 <use logoTEC.png>
-Package pdftex.def Info: logoTEC.png  used on input line 401.
+Package pdftex.def Info: logoTEC.png  used on input line 426.
 (pdftex.def)             Requested size: 61.13646pt x 14.22636pt.
  [14
 
 ]
 File: logoTEC.png Graphic file (type png)
 <use logoTEC.png>
-Package pdftex.def Info: logoTEC.png  used on input line 415.
+Package pdftex.def Info: logoTEC.png  used on input line 437.
 (pdftex.def)             Requested size: 61.13646pt x 14.22636pt.
  [15
+
+]
+File: logoTEC.png Graphic file (type png)
+<use logoTEC.png>
+Package pdftex.def Info: logoTEC.png  used on input line 451.
+(pdftex.def)             Requested size: 61.13646pt x 14.22636pt.
+ [16
 
  </usr/share/texlive/texmf-dist/tex/latex/beamer/beamericonarticle.pdf>]
 \tf@nav=\write7
@@ -1141,13 +1157,13 @@ Package rerunfilecheck Info: File `prueba.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 27197 strings out of 474222
- 528299 string characters out of 5748734
- 2002975 words of memory out of 5000000
- 48875 multiletter control sequences out of 15000+600000
+ 27227 strings out of 474222
+ 528555 string characters out of 5748734
+ 2238975 words of memory out of 5000000
+ 48901 multiletter control sequences out of 15000+600000
  567396 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 128i,16n,123p,559b,1353s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 128i,16n,123p,559b,1394s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/share/tex
@@ -1159,10 +1175,10 @@ blic/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
 msfonts/cm/cmti12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
 s/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
 mtt8.pfb>
-Output written on prueba.pdf (15 pages, 285949 bytes).
+Output written on prueba.pdf (16 pages, 292680 bytes).
 PDF statistics:
- 507 PDF objects out of 1000 (max. 8388607)
- 437 compressed objects within 5 object streams
- 33 named destinations out of 1000 (max. 500000)
+ 535 PDF objects out of 1000 (max. 8388607)
+ 462 compressed objects within 5 object streams
+ 35 named destinations out of 1000 (max. 500000)
  54 words of extra memory for PDF output out of 10000 (max. 10000000)
 

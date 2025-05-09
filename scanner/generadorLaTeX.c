@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-void generar_beamer_variables(int cantidades[]) {
+void generar_beamer_variables(int cantidades[], int lineas_errores[]) {
     FILE *f = fopen("prueba.tex", "w");
     if (!f) {
         perror("Error al crear prueba.tex");
@@ -135,6 +135,7 @@ void generar_beamer_variables(int cantidades[]) {
     "\\lstdefinestyle{mycstyle}{\n"
     "    language=C,\n"
     "    backgroundcolor=\\color{backcolour},\n"
+    "    moredelim=[is][\\color{red}\\bfseries]{|}{|},"
     "    commentstyle=\\color{codegreen},\n"
     "    keywordstyle=\\color{magenta},\n"
     "    numberstyle=\\tiny\\color{codegray},\n"
@@ -278,14 +279,8 @@ void generar_beamer_variables(int cantidades[]) {
     cantidades[83],
     cantidades[84],
     cantidades[85]
-);
-
-
-    //ahora lo que sigue es escribir el codigo de c aquí y luego en el latex
-    fprintf(f,
-        "\\begin{frame}[fragile]{Programa después del preproceso}{}\n\n"
-        "  \\begin{lstlisting}[style=mycstyle]\n"
     );
+    //ahora lo que sigue es escribir el codigo de c aquí y luego en el latex
 
     FILE *f_prepro = fopen("preprocesado.c", "r");
     if (!f_prepro) {
@@ -293,18 +288,42 @@ void generar_beamer_variables(int cantidades[]) {
         fclose(f);
         exit(1);
     }
+    fprintf(f,
+            "\\begin{frame}[fragile]{Programa después del preproceso}{}\n\n"
+            "  \\begin{lstlisting}[style=mycstyle]\n"
+        );
 
     char buffer[1024];
-    int linea = 0;
-    while (linea < 23 && fgets(buffer, 1024, f_prepro)) {
+    int linea = 0, idx_error = 0;
+
+    while (linea < 92 && fgets(buffer, 1024, f_prepro)) {
+        if (idx_error < cantidades[84] && linea+1==lineas_errores[idx_error]) {
+            fprintf(f, "|");
+        }
         fputs(buffer, f);
+        if (idx_error < cantidades[84] && linea+1==lineas_errores[idx_error]) {
+            fprintf(f, "|");
+            idx_error++;
+        }
         linea++;
+        if (linea%23==0) {
+            fprintf(f,
+        "  \\end{lstlisting}\n"
+                "\\end{frame}\n\n"
+                );
+            fprintf(f,
+               "\\begin{frame}[fragile]{Programa después del preproceso}{}\n\n"
+                "  \\begin{lstlisting}[style=mycstyle]\n"
+           );
+        }
     }
+
+
+
     fclose(f_prepro);
     fprintf(f,
         "  \\end{lstlisting}\n"
         "\\end{frame}\n\n"
-        /*"\\end{document}\n"*/
     );
 
     /*AQUI TERMINA LO DE ESCRIBIR EL FILE DEL PREPROCESO FUNCIONA :> */
@@ -538,7 +557,8 @@ void generar_beamer_variables(int cantidades[]) {
 }
 
 void generar_beamer(int arreglo_cantidades[]) {
-    generar_beamer_variables(arreglo_cantidades);
+    int errores[] = {4, 32};
+    generar_beamer_variables(arreglo_cantidades, errores);
     // 2. Compilar el archivo .tex de manera silenciosa
     if (system("pdflatex -interaction=nonstopmode prueba.tex > /dev/null 2>&1") != 0) {
         fprintf(stderr, "Error al compilar prueba.tex\n");
