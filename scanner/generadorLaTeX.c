@@ -10,9 +10,9 @@ void generar_beamer_variables(int cantidades[], int lineas_errores[]) {
     }
     int keyboard = 0, operadores = 0, literales = 0, errores = 0;
     int i;
-    for (i = 0; i < 44; i++) keyboard =+ cantidades[i];
-    for (; i<78; i++) operadores =+ cantidades[i];
-    for (; i < 84; i++) literales =+ cantidades[i];
+    for (i = 0; i < 44; i++) keyboard += cantidades[i];
+    for (; i<78; i++) operadores += cantidades[i];
+    for (; i < 84; i++) literales += cantidades[i];
     errores = cantidades[84]+cantidades[85];
 
     fprintf(f,
@@ -556,8 +556,7 @@ void generar_beamer_variables(int cantidades[], int lineas_errores[]) {
 
 }
 
-void generar_beamer(int arreglo_cantidades[]) {
-    int errores[] = {4, 32};
+void generar_beamer(int arreglo_cantidades[], int errores[]) {
     generar_beamer_variables(arreglo_cantidades, errores);
     // 2. Compilar el archivo .tex de manera silenciosa
     if (system("pdflatex -interaction=nonstopmode prueba.tex > /dev/null 2>&1") != 0) {

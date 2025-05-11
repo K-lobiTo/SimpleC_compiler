@@ -10,7 +10,9 @@ int main(int argc, char* argv[]) {
     }
 
     init_scanner(argv[1]); // Inicializa el scanner con el archivo preprocesado
-
+    unsigned long long base = 1;
+    unsigned long long errores = 0;
+    int cantErrores = 0;
     Token token;
     do {
         token = Get_Token();
@@ -25,6 +27,11 @@ int main(int argc, char* argv[]) {
         }
         else if(token.type == TOK_CHAR_LITERAL){
             printf(" - Valor: %d", token.value.int_val);
+        }
+        else if(token.type == TOK_ERROR) {
+            errores += base*token.line;
+            cantErrores++;
+            base *= 100000;
         }
         printf("\n");
     } while (token.type != TOK_EOF);
@@ -41,9 +48,13 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < TOK_COUNT; i++) {
         arreglo_cantidades[i] = cantidades.token_count[i];
     }
-
+    int arreglo_errores[cantErrores];
+    for (int i = 0; i < cantErrores; i++) {
+        arreglo_errores[i] = errores%100000;
+        errores /= 100000;
+    }
     // Llamar a la función para generar el PDF
-    generar_beamer(arreglo_cantidades);
+    generar_beamer(arreglo_cantidades, arreglo_errores);
 
     return 0;
 }

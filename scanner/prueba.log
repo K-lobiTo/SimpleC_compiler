@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.5.8)  10 MAY 2025 23:53
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.5.8)  11 MAY 2025 01:37
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1019,7 +1019,10 @@ Package pdftex.def Info: logoTEC.png  used on input line 207.
 ]
 \openout4 = `prueba.vrb'.
 
- (./prueba.vrb)
+ (./prueba.vrb
+LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <8> not available
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 13.
+)
 File: logoTEC.png Graphic file (type png)
 <use logoTEC.png>
 Package pdftex.def Info: logoTEC.png  used on input line 226.
@@ -1154,10 +1157,10 @@ Package rerunfilecheck Info: File `prueba.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 27199 strings out of 474222
- 527894 string characters out of 5748734
- 2238975 words of memory out of 5000000
- 48873 multiletter control sequences out of 15000+600000
+ 27227 strings out of 474222
+ 528590 string characters out of 5748734
+ 2236975 words of memory out of 5000000
+ 48901 multiletter control sequences out of 15000+600000
  567396 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,16n,123p,559b,1358s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1172,7 +1175,7 @@ blic/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
 msfonts/cm/cmti12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
 s/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
 mtt8.pfb>
-Output written on prueba.pdf (16 pages, 292022 bytes).
+Output written on prueba.pdf (16 pages, 292345 bytes).
 PDF statistics:
  535 PDF objects out of 1000 (max. 8388607)
  462 compressed objects within 5 object streams
