@@ -12,8 +12,8 @@
 
 \newcommand{\keyword}{18}
 \newcommand{\operadoresysimbolos}{31}
-\newcommand{\literaleseidentificadores}{24}
-\newcommand{\erroresyfindearchivo}{1}
+\newcommand{\literaleseidentificadores}{23}
+\newcommand{\erroresyfindearchivo}{2}
 
 \newcommand{\tokauto}{0}
 \newcommand{\tokbreak}{0}
@@ -95,14 +95,14 @@
 \newcommand{\tokcomma}{1}
 \newcommand{\tokellipsis}{0}
 
-\newcommand{\tokidentifier}{18}
+\newcommand{\tokidentifier}{17}
 \newcommand{\tokintliteral}{2}
 \newcommand{\tokfloatliteral}{2}
 \newcommand{\tokstringliteral}{2}
 \newcommand{\tokcharliteral}{0}
 \newcommand{\tokboolliteral}{0}
 
-\newcommand{\tokerror}{0}
+\newcommand{\tokerror}{1}
 \newcommand{\tokeof}{1}
 
 \usepackage{listings}
@@ -185,8 +185,8 @@ long long largo(long long grueso);
 int mokeyplus(int a, int b) {
 a+=b;
 return a + b; 
-}#errortoken nosirve
-int main() {
+|}#errortoken nosirve
+|int main() {
 double numPi = 3.1416;
 double dosPi = 3.1416 * 2;
 long long mesi= "testmessi"; 

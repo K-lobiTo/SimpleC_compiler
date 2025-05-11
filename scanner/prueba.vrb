@@ -6,8 +6,8 @@ long long largo(long long grueso);
 int mokeyplus(int a, int b) {
 a+=b;
 return a + b;
-}#errortoken nosirve
-int main() {
+|}#errortoken nosirve
+|int main() {
 double numPi = 3.1416;
 double dosPi = 3.1416 * 2;
 long long mesi= "testmessi";

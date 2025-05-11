@@ -203,8 +203,20 @@ EXP      [Ee][+-]?{DIGIT}+
 [ \t\r]+    { /* Ignorar espacios y tabs */ }
 \n          { current_line++; }
 
-
 <<EOF>> {return TOK_EOF;}
+
+  /* ========== PREPROCESSOR ERROR HANDLING ========== */
+#[a-zA-Z0-9_]* {
+    lexical_error("Invalid preprocessor directive");
+    return TOK_ERROR;
+}
+
+
+ /* ========== ERROR CATCH-ALL ========== */
+. {
+    lexical_error("Carácter no reconocido");
+    return TOK_ERROR;
+}
 
 %%
 

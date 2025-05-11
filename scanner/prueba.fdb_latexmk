@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1746996850.06007 "/home/klob/Documents/Compi/scanner/scanner/prueba.tex" "prueba.pdf" "prueba" 1746996851.66663 0
+["pdflatex"] 1746997502.96305 "/home/klob/Documents/Compi/scanner/scanner/prueba.tex" "prueba.pdf" "prueba" 1746997504.57228 0
   "/etc/texmf/web2c/texmf.cnf" 1740023117.6096 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/klob/Documents/Compi/scanner/scanner/prueba.tex" 1746996849.85313 14681 2b4623ef5dbe6b40edb48c2be565cbdb ""
+  "/home/klob/Documents/Compi/scanner/scanner/prueba.tex" 1746997502.73463 14683 a0aa18e126ff118dfe948cfe77f33cbd ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -236,11 +236,11 @@
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1746996177 5466543 0c5b7c4dc02895cac086c9e8f360c4e7 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1746996261 3354825 4bf6edd129ae650b1af3b2fcdbecb54d ""
   "logoTEC.png" 1746652314.44066 99929 29bbe82c299dff58860196a776540cf6 ""
-  "prueba.aux" 1746996851.57318 2235 23f456577a51ffb1086b24fc95d7e78a "pdflatex"
-  "prueba.nav" 1746996851.57318 1396 fc6c3221e34dbd6f6269961dfc330ea8 "pdflatex"
-  "prueba.out" 1746996850.80516 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "prueba.tex" 1746996849.85313 14681 2b4623ef5dbe6b40edb48c2be565cbdb ""
-  "prueba.vrb" 1746996851.11317 395 de43de7db94d159165d18feef3f2ec17 "pdflatex"
+  "prueba.aux" 1746997504.47069 2235 23f456577a51ffb1086b24fc95d7e78a "pdflatex"
+  "prueba.nav" 1746997504.47469 1396 fc6c3221e34dbd6f6269961dfc330ea8 "pdflatex"
+  "prueba.out" 1746997503.67866 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "prueba.tex" 1746997502.73463 14683 a0aa18e126ff118dfe948cfe77f33cbd ""
+  "prueba.vrb" 1746997503.99067 397 9b54c4ca4ddbed2ab72aed1c799ce49a "pdflatex"
   (generated)
   "prueba.aux"
   "prueba.log"
