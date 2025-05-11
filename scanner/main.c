@@ -1,5 +1,5 @@
 #include "tokens.h"
-
+#include "generadorLaTeX.h"
 #include <stdio.h>
 
 
@@ -35,6 +35,15 @@ int main(int argc, char* argv[]) {
             printf("%-20s: %d : my i: %d\n", tTypeToStr(i), cantidades.token_count[i], i);
         }
     }
+
+    // Convertir TokenCount a un arreglo de enteros (como en generadorLaTeX.c)
+    int arreglo_cantidades[86]; // Ajusta el tamaño según TOK_COUNT
+    for (int i = 0; i < TOK_COUNT; i++) {
+        arreglo_cantidades[i] = cantidades.token_count[i];
+    }
+
+    // Llamar a la función para generar el PDF
+    generar_beamer(arreglo_cantidades);
 
     return 0;
 }
