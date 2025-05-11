@@ -1,15 +1,19 @@
 #include "tokens.h"
 #include "generadorLaTeX.h"
+#include "preprocesador.h"
 #include <stdio.h>
 
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        fprintf(stderr, "Uso: %s <archivo_preprocesado>\n", argv[0]);
+        fprintf(stderr, "Uso: %s <archivo_por_preprocesar>\n", argv[0]);
         return 1;
     }
 
-    init_scanner(argv[1]); // Inicializa el scanner con el archivo preprocesado
+    make_preprocess(argv[1], "preprocesado.c");
+
+
+    init_scanner("preprocesado.c"); // Inicializa el scanner con el archivo preprocesado
     unsigned long long base = 1;
     unsigned long long errores = 0;
     int cantErrores = 0;

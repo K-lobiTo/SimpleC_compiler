@@ -8,8 +8,6 @@
 #define MAX_LINE_LENGTH 1024
 #define DEBUG(v) printf("%s\n", v)
 
-#define PRUEBA /*esto es prueba*/ "prueba"
-
 typedef struct {
     char *name;
     char *value;
@@ -223,20 +221,32 @@ void process_file(const char *filename, FILE *output, bool is_include) {
     fclose(file);
 }
 
-int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        fprintf(stderr, "Usage: %s <input.c> <output.c>\n", argv[0]);
-        return 1;
-    }
+void make_preprocess(char* origin, char* target){
 
-    FILE *output = fopen(argv[2], "w");
+    FILE *output = fopen(target, "w");
     if (!output) {
-        fprintf(stderr, "Error: Cannot create %s\n", argv[2]);
-        return 1;
+        fprintf(stderr, "Error: Cannot create %s\n", target);
+        return;
     }
 
-    process_file(argv[1], output, false);
+    process_file(origin, output, false);
     fclose(output);
-
-    return 0;
 }
+
+// int main(int argc, char *argv[]) {
+//     if (argc != 3) {
+//         fprintf(stderr, "Usage: %s <input.c> <output.c>\n", argv[0]);
+//         return 1;
+//     }
+
+//     FILE *output = fopen(argv[2], "w");
+//     if (!output) {
+//         fprintf(stderr, "Error: Cannot create %s\n", argv[2]);
+//         return 1;
+//     }
+
+//     process_file(argv[1], output, false);
+//     fclose(output);
+
+//     return 0;
+// }

@@ -1,6 +1,5 @@
-#line 2 "lex.yy.c"
 
-#line 4 "lex.yy.c"
+#line 3 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -613,10 +612,10 @@ unsigned int string_buf_size;
 // Prototipos
 void lexical_error(const char* msg);
 void handle_comment(void);
-#line 617 "lex.yy.c"
+#line 616 "lex.yy.c"
 #define YY_NO_INPUT 1
 
-#line 620 "lex.yy.c"
+#line 619 "lex.yy.c"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -838,7 +837,7 @@ YY_DECL
 
 #line 27 "scanner.l"
  /* ========== PALABRAS CLAVE ========== */
-#line 842 "lex.yy.c"
+#line 841 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1425,7 +1424,7 @@ YY_RULE_SETUP
 #line 210 "scanner.l"
 ECHO;
 	YY_BREAK
-#line 1429 "lex.yy.c"
+#line 1428 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{

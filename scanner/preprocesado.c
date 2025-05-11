@@ -1,37 +1,13 @@
-#include <stdio.h>
-
-void solve(int y) {
-    long long  n = 10;
-    long long a[10];
-    for(int i = 0; i < n; i++){
-        scanf("%lld",&a[i];
-
-    }
-
-    if(a[n-1]==0){//caso 1
-        for(int i = 1; i <=n+1; i++)printf("%lld",a[i]);
-        printf("\n");
-        return;
-    }
-    if(a[0]==1){//caso 2
-        printf("lala ");
-        for(int i = 1; i <=n; i++)printf("%lld",a[i]);
-        printf("\n";
-        return;
-    }
-    if(a[0]==0 && a[1]==1){//caso 3
-        printf("lala ";
-        for(int i = 2; i <=n; i++)printf("%lld",a[i]);
-        printf("\n";
-        return;
-    }
-    printf("-1\n";
-}
-
+int holaAndamosTesting(long long xd);
+long long largo(long long grueso);
+int mokeyplus(int a, int b) {
+a+=b;
+return a + b; 
+}#errortoken nosirve
 int main() {
-    float x = 3.14;
-    char* s = "Hola Mundo;
-    if (x <= 0x1F) {
-        return 0;
-    }
+double numPi = 3.1416;
+double dosPi = 3.1416 * 2;
+long long mesi= "testmessi"; 
+char* mesi2 = "testmessi2"; 
+return 0;
 }

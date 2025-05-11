@@ -1,5 +1,6 @@
 #include "config.h"
 #include "cfile.c"
+#errortoken nosirve
 
 
 
