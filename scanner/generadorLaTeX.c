@@ -134,7 +134,7 @@ void generar_beamer_variables(int cantidades[], int lineas_errores[]) {
 
     "\\lstdefinestyle{mycstyle}{\n"
 "    language=C,\n"
-"    moredelim=[is][\\color{red}\bfseries]{|}{|},\n"
+"    moredelim=[is][\\color{red}\\bfseries]{|}{|},\n"
 "    backgroundcolor=\\color{backcolour},\n"
 "    commentstyle=\\color{codegreen},\n"
 "    keywordstyle=\\color{magenta},\n"
