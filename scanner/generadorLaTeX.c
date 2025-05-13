@@ -174,7 +174,7 @@ void generar_beamer_variables(int cantidades[], int lineas_errores[]) {
 "         {9}{{{\\color{codepurple}9}}}{1}\n"
 "}\n\n"
 
-    "\\title[Scaner]{Scaner}\n"
+    "\\title[Scanner]{Scanner}\n"
     "\\author[Caleb\\and Sebastián \\and Desireé]{Caleb Alfaro \\and Sebastián Quesada \\and Desireé Avilés\\inst{1}}\n"
     "\\date[TEC 2025]{Segundo Proyecto de Compiladores, Mayo 2025}\n\n"
 

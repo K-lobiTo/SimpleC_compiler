@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
     TokenCount cantidades = getTokenCount();
     for (int i = 0; i < TOK_COUNT; i++) {
         if (cantidades.token_count[i] >= 0) {
-            printf("%-20s: %d : my i: %d\n", tTypeToStr(i), cantidades.token_count[i], i);
+            printf("%-20samount: %d  / index: %d\n", tTypeToStr(i), cantidades.token_count[i], i);
         }
     }
 
