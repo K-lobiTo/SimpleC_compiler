@@ -10,20 +10,20 @@
 \usefonttheme{serif}
 \usecolortheme{rose}
 
-\newcommand{\keyword}{18}
-\newcommand{\operadoresysimbolos}{31}
-\newcommand{\literaleseidentificadores}{23}
-\newcommand{\erroresyfindearchivo}{2}
+\newcommand{\keyword}{4}
+\newcommand{\operadoresysimbolos}{10}
+\newcommand{\literaleseidentificadores}{7}
+\newcommand{\erroresyfindearchivo}{1}
 
 \newcommand{\tokauto}{0}
 \newcommand{\tokbreak}{0}
 \newcommand{\tokcase}{0}
-\newcommand{\tokchar}{1}
+\newcommand{\tokchar}{0}
 \newcommand{\tokconst}{0}
 \newcommand{\tokcontinue}{0}
 \newcommand{\tokdefault}{0}
 \newcommand{\tokdo}{0}
-\newcommand{\tokdouble}{2}
+\newcommand{\tokdouble}{0}
 \newcommand{\tokelse}{0}
 \newcommand{\tokenum}{0}
 \newcommand{\tokextern}{0}
@@ -31,10 +31,10 @@
 \newcommand{\tokfor}{0}
 \newcommand{\tokgoto}{0}
 \newcommand{\tokif}{0}
-\newcommand{\tokint}{5}
-\newcommand{\toklong}{8}
+\newcommand{\tokint}{3}
+\newcommand{\toklong}{0}
 \newcommand{\tokregister}{0}
-\newcommand{\tokreturn}{2}
+\newcommand{\tokreturn}{1}
 \newcommand{\tokshort}{0}
 \newcommand{\toksigned}{0}
 \newcommand{\toksizeof}{0}
@@ -62,9 +62,9 @@
 
 \newcommand{\tokplus}{2}
 \newcommand{\tokminus}{0}
-\newcommand{\tokmult}{2}
+\newcommand{\tokmult}{0}
 \newcommand{\tokdiv}{0}
-\newcommand{\tokassign}{5}
+\newcommand{\tokassign}{1}
 \newcommand{\tokeq}{0}
 \newcommand{\tokneq}{0}
 \newcommand{\toklt}{0}
@@ -84,25 +84,25 @@
 \newcommand{\tokdecrement}{0}
 \newcommand{\tokdot}{0}
 \newcommand{\tokarrow}{0}
-\newcommand{\toklparen}{4}
-\newcommand{\tokrparen}{4}
-\newcommand{\toklbrace}{2}
-\newcommand{\tokrbrace}{2}
+\newcommand{\toklparen}{1}
+\newcommand{\tokrparen}{1}
+\newcommand{\toklbrace}{1}
+\newcommand{\tokrbrace}{1}
 \newcommand{\toklbracket}{0}
 \newcommand{\tokrbracket}{0}
-\newcommand{\toksemicolon}{9}
+\newcommand{\toksemicolon}{2}
 \newcommand{\tokcolon}{0}
 \newcommand{\tokcomma}{1}
 \newcommand{\tokellipsis}{0}
 
-\newcommand{\tokidentifier}{17}
-\newcommand{\tokintliteral}{2}
-\newcommand{\tokfloatliteral}{2}
-\newcommand{\tokstringliteral}{2}
+\newcommand{\tokidentifier}{7}
+\newcommand{\tokintliteral}{0}
+\newcommand{\tokfloatliteral}{0}
+\newcommand{\tokstringliteral}{0}
 \newcommand{\tokcharliteral}{0}
 \newcommand{\tokboolliteral}{0}
 
-\newcommand{\tokerror}{1}
+\newcommand{\tokerror}{0}
 \newcommand{\tokeof}{1}
 
 \usepackage{listings}
@@ -116,11 +116,13 @@
 
 \lstdefinestyle{mycstyle}{
     language=C,
+    moredelim=[is][\color{red}fseries]{|}{|},
     backgroundcolor=\color{backcolour},
-    moredelim=[is][\color{red}\bfseries]{|}{|},    commentstyle=\color{codegreen},
+    commentstyle=\color{codegreen},
     keywordstyle=\color{magenta},
-    numberstyle=\tiny\color{codegray},
+    numberstyle=\tiny\color{white}, % ← números de línea
     stringstyle=\color{codepurple},
+    identifierstyle=\color{codegreen},
     basicstyle=\ttfamily\scriptsize,
     breakatwhitespace=false,
     breaklines=true,
@@ -132,7 +134,26 @@
     showstringspaces=false,
     showtabs=false,
     tabsize=2,
-    frame=single
+    frame=single,
+    morekeywords={
+        auto, break, case, char, const, continue, default, do, double,
+        else, enum, extern, float, for, goto, if, inline, int, long,
+        register, restrict, return, short, signed, sizeof, static,
+        struct, switch, typedef, union, unsigned, void, volatile, while,
+        _Alignas, _Alignof, _Atomic, _Bool, _Complex, _Generic,
+        _Imaginary, _Noreturn, _Static_assert, _Thread_local
+    },
+    literate=%
+        *{0}{{{\color{codepurple}0}}}{1}%
+         {1}{{{\color{codepurple}1}}}{1}%
+         {2}{{{\color{codepurple}2}}}{1}%
+         {3}{{{\color{codepurple}3}}}{1}%
+         {4}{{{\color{codepurple}4}}}{1}%
+         {5}{{{\color{codepurple}5}}}{1}%
+         {6}{{{\color{codepurple}6}}}{1}%
+         {7}{{{\color{codepurple}7}}}{1}%
+         {8}{{{\color{codepurple}8}}}{1}%
+         {9}{{{\color{codepurple}9}}}{1}
 }
 
 \title[Scaner]{Scaner}
@@ -180,18 +201,9 @@ Flex es una herramienta generadora de analizadores léxicos, también conocidos 
 \begin{frame}[fragile]{Programa después del preproceso}{}
 
   \begin{lstlisting}[style=mycstyle]
-int holaAndamosTesting(long long xd);
-long long largo(long long grueso);
 int mokeyplus(int a, int b) {
 a+=b;
 return a + b; 
-|}#errortoken nosirve
-|int main() {
-double numPi = 3.1416;
-double dosPi = 3.1416 * 2;
-long long mesi= "testmessi"; 
-char* mesi2 = "testmessi2"; 
-return 0;
 }  \end{lstlisting}
 \end{frame}
 
