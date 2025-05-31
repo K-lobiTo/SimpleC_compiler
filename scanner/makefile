@@ -9,6 +9,10 @@ HEADERS = tokens.h preprocesador.h parser.h
 
 all: $(TARGET)
 
+# Explicit rule to prevent scanner.c from being regenerated
+scanner.c:
+	@echo "Using existing scanner.c"
+
 lex.yy.c: scanner.l
 	flex $<
 
@@ -16,7 +20,7 @@ $(TARGET): $(SOURCES) $(HEADERS)
 	$(CC) $(CFLAGS) -o $@ $(SOURCES) $(LDFLAGS)
 
 clean:
-	rm -f $(TARGET) lex.yy.c
+	rm -f $(TARGET) preprocesado.c
 
 byhand:
 	flex scanner.l

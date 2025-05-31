@@ -412,26 +412,16 @@ static ASTNode* primary() {
 void free_ast(ASTNode* node) {
     if (!node) return;
 
-    // Free children first (depth-first)
-    free_ast(node->left);
-    free_ast(node->right);
-    free_ast(node->extra);
-    free_ast(node->next);  // For statement lists
+    free_ast(node->left); node->left = NULL;
+    free_ast(node->right); node->right = NULL;
+    free_ast(node->extra); node->extra = NULL;
+    free_ast(node->next); node->next = NULL;
 
-    // Free lexemes only if this node owns them
     if (node->token.lexeme) {
-        switch (node->type) {
-            case NODE_STRING_LITERAL:
-            // case NODE_IDENTIFIER:  // Only if not from symbol table
-            //     free(node->token.lexeme);
-            //     break;
-            default:
-                break;  // Other nodes share lexemes
-        }
+        free(node->token.lexeme);
+        node->token.lexeme = NULL;
     }
 
-    // Clear the node before freeing
-    memset(node, 0, sizeof(ASTNode));
     free(node);
 }
 

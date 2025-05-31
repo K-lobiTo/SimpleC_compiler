@@ -118,42 +118,38 @@ const char* tTypeToStr(TokenType t) {
 
 Token Get_Token(void) {
     Token token;
+    memset(&token, 0, sizeof(Token)); // Initialize all fields
     int token_type = yylex();
 
-    // Incrementar contador si el token es válido
+    // Increment token counter
     if (token_type >= 0 && token_type < TOK_COUNT) {
         token_counts[token_type]++;
     }
     
     token.type = token_type;
     token.line = current_line;
+    // token.lexeme = NULL; // Initialize to NULL
 
     switch (token_type) {
         case TOK_IDENTIFIER:
-            token.lexeme = yylval.lexeme;
-            break;
         case TOK_STRING_LITERAL:
-            token.lexeme = strdup(yylval.lexeme);
-            break;
-        case TOK_FLOAT_LITERAL:
-            token.lexeme = NULL;
-            token.value.float_val = yylval.float_val;
+            token.lexeme = yylval.lexeme; // Transfer ownership
+            yylval.lexeme = NULL; // Prevent double-free
             break;
         case TOK_INT_LITERAL:
-            token.lexeme = NULL;
             token.value.int_val = yylval.int_val;
+            break;
+        case TOK_FLOAT_LITERAL:
+            token.value.float_val = yylval.float_val;
+            break;
+        case TOK_EOF:
+            fclose(yyin);
             break;
         case TOK_CHAR_LITERAL:
-            token.lexeme = NULL;
             token.value.int_val = yylval.int_val;
             break;
-
-        case TOK_EOF:
-            fclose(yyin); // Cierra el archivo
-            token.lexeme = NULL;
-            break;
         default:
-            token.lexeme = NULL;
+            break;
     }
     
     return token;

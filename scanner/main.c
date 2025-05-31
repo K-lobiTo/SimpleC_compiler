@@ -15,17 +15,10 @@ int main(int argc, char* argv[]) {
 
     ASTNode *ast = parse_program();
 
-    if(ast != NULL){
-        printf("\nAbstract Syntax Tree:\n");
+    if (ast) {
         print_ast(ast, 0);
-        printf("\nAST pointers before free_ast:\n");
-        print_ast_pointers(ast, 0);
         free_ast(ast);
-        ast = NULL;
-        printf("\nAST pointers after free_ast:\n");
-        print_ast_pointers(ast, 0);
     }
-
 
     return parser_had_error() ? 1 : 0;
 }
