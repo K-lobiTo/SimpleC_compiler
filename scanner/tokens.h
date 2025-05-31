@@ -53,6 +53,14 @@ typedef enum {
 
 } TokenType;
 
+// typedef union {
+//     char* lexeme;
+//     long long int_val;
+//     long double float_val;
+//     char* suffix;           // Sufijos como "ULL"
+//     _Bool bool_val;         // Literales booleanos
+// }
+
 typedef struct {
     TokenType type;      // Tipo del token
     char* lexeme;        // Lexema (cadena del token)

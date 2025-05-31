@@ -130,6 +130,8 @@ Token Get_Token(void) {
 
     switch (token_type) {
         case TOK_IDENTIFIER:
+            token.lexeme = yylval.lexeme;
+            break;
         case TOK_STRING_LITERAL:
             token.lexeme = strdup(yylval.lexeme);
             break;

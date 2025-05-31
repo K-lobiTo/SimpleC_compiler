@@ -1,4 +1,8 @@
-int mokeyplus(int a, int b) {
-a+=b;
-return a + b; 
+int main() {
+int x = 2;
+if(x == 2){
+int m = x*x;
+}
+int y = x * 2;
+return 0;
 }

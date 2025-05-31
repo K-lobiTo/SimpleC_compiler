@@ -1,7 +1,0 @@
-\frametitle{Programa después del preproceso}\framesubtitle {}
-
-  \begin{lstlisting}[style=mycstyle]
-int mokeyplus(int a, int b) {
-a+=b;
-return a + b;
-}  \end{lstlisting}

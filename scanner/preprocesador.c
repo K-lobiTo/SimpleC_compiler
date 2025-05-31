@@ -46,12 +46,12 @@ void add_define(const char *name, const char *value) {
     // printf("%d numdefines\n", num_defines);
 }
 
-void process_file(const char *filename, FILE *output, bool is_include);
+void process_file(const char *filename, FILE *output);
 
 void process_include(const char *filename, FILE *output) {
     
     // fprintf(output, "\n// Begin include %s\n", filename); // show begin and end of include
-    process_file(filename, output, true);
+    process_file(filename, output);
     // fprintf(output, "\n// End include %s\n", filename);
 }
 
@@ -159,7 +159,7 @@ char* process_comments(char *line){
 }
 
 
-void process_line(char *line, FILE *output, bool is_include) {
+void process_line(char *line, FILE *output) {
     // char *trimmed = line;
     char *trimmed = process_comments(line);
     
@@ -196,16 +196,13 @@ void process_line(char *line, FILE *output, bool is_include) {
         add_define(rest, value);
         *name_end = saved;
         
-        // if (is_include) { //adding the #define declaration anyway
-        //     fputs(line, output);
-        // }
     }
     else {
         expand_macros(trimmed, output);
     }
 }
 
-void process_file(const char *filename, FILE *output, bool is_include) {
+void process_file(const char *filename, FILE *output) {
     FILE *file = fopen(filename, "r");
     if (!file) {
         fprintf(stderr, "Error: Cannot open %s\n", filename);
@@ -215,7 +212,7 @@ void process_file(const char *filename, FILE *output, bool is_include) {
     char line[MAX_LINE_LENGTH];
     open_comment = 0;
     while (fgets(line, sizeof(line), file)) {
-        process_line(line, output, is_include);
+        process_line(line, output);
     }
 
     fclose(file);
@@ -229,7 +226,7 @@ void make_preprocess(char* origin, char* target){
         return;
     }
 
-    process_file(origin, output, false);
+    process_file(origin, output);
     fclose(output);
 }
 
