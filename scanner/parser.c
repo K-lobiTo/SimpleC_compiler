@@ -412,10 +412,26 @@ static ASTNode* primary() {
 void free_ast(ASTNode* node) {
     if (!node) return;
 
-    free_ast(node->left); node->left = NULL;
-    free_ast(node->right); node->right = NULL;
-    free_ast(node->extra); node->extra = NULL;
-    free_ast(node->next); node->next = NULL;
+     if (node->left && node->left != node->right && node->left != node->extra) {
+        free_ast(node->left);
+    }
+    node->left = NULL;
+
+    if (node->right && node->right != node->extra) {
+        free_ast(node->right);
+    }
+    node->right = NULL;
+
+    if (node->extra) {
+        free_ast(node->extra);
+    }
+    node->extra = NULL;
+
+    if (node->next) {
+        ASTNode* next = node->next;
+        node->next = NULL;
+        free_ast(next);
+    }
 
     if (node->token.lexeme) {
         free(node->token.lexeme);

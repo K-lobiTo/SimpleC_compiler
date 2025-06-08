@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 
     if (ast) {
         print_ast(ast, 0);
-        free_ast(ast);
+        // free_ast(ast);
     }
 
     return parser_had_error() ? 1 : 0;

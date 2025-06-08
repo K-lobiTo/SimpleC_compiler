@@ -117,8 +117,8 @@ const char* tTypeToStr(TokenType t) {
 }
 
 Token Get_Token(void) {
-    Token token;
-    memset(&token, 0, sizeof(Token)); // Initialize all fields
+    Token token = {0};
+
     int token_type = yylex();
 
     // Increment token counter

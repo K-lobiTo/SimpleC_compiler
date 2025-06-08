@@ -79,6 +79,7 @@ EXP      [Ee][+-]?{DIGIT}+
 "<<"        { return TOK_LSHIFT; }
 ">>"        { return TOK_RSHIFT; }
 "++"        { return TOK_INCREMENT; }
+"+="        { return TOK_PLUSASSIGN; }
 "--"        { return TOK_DECREMENT; }
 "."         { return TOK_DOT; }
 "->"        { return TOK_ARROW; }
