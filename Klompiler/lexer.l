@@ -13,6 +13,7 @@ extern int yychar;
 %option yylineno
 
 DIGIT    [0-9]
+INTEGER  [-+]?{DIGIT}+
 LETTER   [a-zA-Z_]
 ID       {LETTER}({LETTER}|{DIGIT})*
 WS       [ \t\n]
@@ -60,7 +61,7 @@ WS       [ \t\n]
 "||"          { return OR; }
 
 {ID}          { yylval.string = strdup(yytext); return IDENTIFIER; }
-{DIGIT}+      { yylval.number = atoi(yytext); return INTEGER; }
+{INTEGER}     { yylval.number = atoll(yytext); return INTEGER; }
 {WS}       ;
 .       {
     char error_msg[50];

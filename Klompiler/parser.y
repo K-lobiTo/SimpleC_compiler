@@ -31,6 +31,7 @@ static const char *last_expected = NULL;
     struct ast_node *node;
 }
 
+%left UNARY_MINUS
 %token <number> INTEGER
 %token <string> IDENTIFIER
 %token INT MAIN MAINFUN
@@ -180,6 +181,7 @@ unary_expression:
     | INC IDENTIFIER { $$ = new_prefix_op_node(OP_INC, $2); }
     | DEC IDENTIFIER { $$ = new_prefix_op_node(OP_DEC, $2); }
     | NOT unary_expression { $$ = new_not_node($2); }
+    | SUB unary_expression %prec UNARY_MINUS
     ;
 
 postfix_expression:
