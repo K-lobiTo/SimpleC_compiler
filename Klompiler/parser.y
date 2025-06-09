@@ -1,17 +1,28 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include "compiler.h"
 
 extern int yylex();
 
 ASTNode *program_root = NULL;
 
-void yyerror(const char* s) { // override (error handling)
-    compiler_error(s);
-}
+// Enhanced error reporting
+extern int yylineno;
+void yyerror(const char *msg);
+const char *token_name(int token);
+
+// For error reporting
+extern int yychar;
+static const char *last_expected = NULL;
 
 %}
+
+%define parse.error verbose
+%define parse.lac full
+%token-table
 
 
 %union {
@@ -97,6 +108,11 @@ statement_list:
 selection_statement:
     IF LPAREN expression RPAREN compound_statement { $$ = new_if_node($3, $5, NULL); }
     | IF LPAREN expression RPAREN compound_statement ELSE compound_statement { $$ = new_if_node($3, $5, $7); }
+    | IF error %prec LBRACE {  // Add precedence
+        last_expected = "expected '(' after 'if'";
+        yyerrok;  // Add error recovery
+        YYERROR;
+    }
     ;
 
 iteration_statement:
@@ -179,3 +195,88 @@ primary_expression:
     ;
 
 %%
+
+const char *token_name(int token) {
+    static char buf[32];
+    
+    // Handle single-character tokens first
+    if (token < 256 && isprint(token)) {
+        sprintf(buf, "'%c'", token);
+        return buf;
+    }
+    
+    switch (token) {
+        /* Keywords */
+        case INT: return "'int'";
+        case MAIN: return "'main'";
+        case IF: return "'if'";
+        case ELSE: return "'else'";
+        case WHILE: return "'while'";
+        case FOR: return "'for'";
+        case BREAK: return "'break'";
+        case RETURN: return "'return'";
+        
+        /* Identifiers/Literals */
+        case IDENTIFIER: return "identifier";
+        case INTEGER: return "integer";
+        
+        /* Operators */
+        case INC: return "'++'";
+        case DEC: return "'--'";
+        case PE: return "'+='";
+        case ME: return "'-='";
+        case ADD: return "'+'";
+        case SUB: return "'-'";
+        case MUL: return "'*'";
+        case DIV: return "'/'";
+        case MOD: return "'%'";
+        case ASSIGN: return "'='";
+        case EQ: return "'=='";
+        case NE: return "'!='";
+        case LT: return "'<'";
+        case LE: return "'<='";
+        case GT: return "'>'";
+        case GE: return "'>='";
+        case NOT: return "'!'";
+        case AND: return "'&&'";
+        case OR: return "'||'";
+        
+        /* Punctuation */
+        case SEMICOLON: return "';'";
+        case COMMA: return "','";
+        case LPAREN: return "'('";
+        case RPAREN: return "')'";
+        case LBRACE: return "'{'";
+        case RBRACE: return "'}'";
+        
+        /* Special cases */
+        case 0: return "end of input";
+        case YYerror: return "error";
+        case YYUNDEF: return "invalid token";
+        
+        default: {
+            sprintf(buf, "token %d", token);
+            return buf;
+        }
+    }
+}
+
+void yyerror(const char *msg) {
+    if (yychar != YYEMPTY && yychar != YYEOF) {
+        fprintf(stderr, "Line %d: Syntax error at %s, unexpected %s",
+                yylineno,
+                last_expected ? last_expected : "input",
+                token_name(yychar));
+        
+        if (last_expected) {
+            fprintf(stderr, ", expected %s\n", last_expected);
+        } else {
+            fprintf(stderr, "\n");
+        }
+    } else {
+        fprintf(stderr, "Line %d: Syntax error at %s\n", 
+                yylineno,
+                last_expected ? last_expected : "input");
+    }
+    last_expected = NULL;
+}

@@ -211,6 +211,7 @@ static char *last_error = NULL;
 void compiler_error(const char *msg) {
     if (last_error)print_errors();
     last_error = strdup(msg);
+    print_errors();
 }
 
 void print_errors(void) {

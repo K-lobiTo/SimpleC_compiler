@@ -48,6 +48,10 @@ typedef enum {
     OP_ME,
 } Operator;
 
+
+/* Error token */
+#define ERROR 256
+
 struct ast_node {
     NodeType type;
     union {
@@ -108,6 +112,8 @@ struct ast_node {
     };
 };
 
+
+// I need to add YYLTYPE loc to all of this later
 ASTNode *new_int_node(int value);
 ASTNode *new_ident_node(char *name);
 ASTNode *new_not_node(ASTNode *expr);
@@ -129,6 +135,7 @@ ASTNode *new_main_function_node(char *name, ASTNode *params, ASTNode *body);
 void free_ast(ASTNode *node);
 
 // Error handling
+
 void compiler_error(const char *msg);
 void print_errors(void);
 #endif

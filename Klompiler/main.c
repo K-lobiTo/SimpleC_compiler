@@ -4,6 +4,7 @@
 
 extern FILE *yyin;
 extern int yyparse();
+extern int yylineno;
 extern ASTNode *program_root;
 
 int main(int argc, char *argv[]) {
@@ -21,9 +22,9 @@ int main(int argc, char *argv[]) {
 
     yyin = input;
     // Parse the input file
+    // int error_line = 0;
     if (yyparse() != 0) {
-        // fprintf(stderr, "Parsing failed\n");
-        print_errors();
+        fprintf(stderr, "Parsing failed at line %d\n", yylineno);
         fclose(yyin);
         return 1;
     }

@@ -1,14 +1,16 @@
 %{
 #include <stdio.h>
+#include <ctype.h>
 #include "parser.tab.h"
 #include "compiler.h"
 
 void yyerror(const char *s);
-
+extern int yychar;
 
 %}
 
 %option noyywrap
+%option yylineno
 
 DIGIT    [0-9]
 LETTER   [a-zA-Z_]
@@ -59,8 +61,15 @@ WS       [ \t\n]
 
 {ID}          { yylval.string = strdup(yytext); return IDENTIFIER; }
 {DIGIT}+      { yylval.number = atoi(yytext); return INTEGER; }
-
 {WS}       ;
-.       { compiler_error("Invalid character"); } 
+.       {
+    char error_msg[50];
+    if (isprint(*yytext)) {
+        snprintf(error_msg, sizeof(error_msg), "Invalid character '%s'", yytext);
+    } else {
+        snprintf(error_msg, sizeof(error_msg), "Invalid character (ASCII %d)", *yytext);
+    }
+    compiler_error(error_msg);
+} 
 
 %%
