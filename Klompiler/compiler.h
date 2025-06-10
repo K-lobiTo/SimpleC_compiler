@@ -46,6 +46,9 @@ typedef enum {
     OP_DEC,
     OP_PE,
     OP_ME,
+    OP_MULE,
+    OP_DIVE,
+    OP_MODE,
 } Operator;
 
 

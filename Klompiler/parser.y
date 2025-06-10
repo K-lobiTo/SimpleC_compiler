@@ -42,7 +42,7 @@ static const char *last_expected = NULL;
 %token LPAREN RPAREN LBRACE RBRACE
 %token EQ NE LT LE GT GE
 %token NOT AND OR
-%token INC DEC PE ME
+%token INC DEC PE ME MULE MODE DIVE
 
 
 %type <node> program global_declarations
@@ -136,6 +136,9 @@ assignment_expression:
     IDENTIFIER ASSIGN expression { $$ = new_assign_node(new_ident_node($1), $3); }
     | IDENTIFIER PE expression { $$ = new_compound_assign_node($1, OP_PE, $3); }
     | IDENTIFIER ME expression { $$ = new_compound_assign_node($1, OP_ME, $3); }
+    | IDENTIFIER MODE expression { $$ = new_compound_assign_node($1, OP_MODE, $3); }
+    | IDENTIFIER MULE expression { $$ = new_compound_assign_node($1, OP_MULE, $3); }
+    | IDENTIFIER DIVE expression { $$ = new_compound_assign_node($1, OP_DIVE, $3); }
     | logical_or_expression
     ;
 
@@ -181,7 +184,7 @@ unary_expression:
     | INC IDENTIFIER { $$ = new_prefix_op_node(OP_INC, $2); }
     | DEC IDENTIFIER { $$ = new_prefix_op_node(OP_DEC, $2); }
     | NOT unary_expression { $$ = new_not_node($2); }
-    | SUB unary_expression %prec UNARY_MINUS
+    | SUB unary_expression %prec UNARY_MINUS { /* maybe something is missing here */ }
     ;
 
 postfix_expression:

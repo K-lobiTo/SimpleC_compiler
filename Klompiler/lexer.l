@@ -37,6 +37,9 @@ WS       [ \t\n]
 "--"          { return DEC; }
 "+="          { return PE; }
 "-="          { return ME; }
+"*="          { return MULE; }
+"%="          { return MODE; }
+"/="          { return DIVE; }
 "+"           { return ADD; }
 "-"           { return SUB; }
 "*"           { return MUL; }
