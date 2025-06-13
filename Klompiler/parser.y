@@ -26,15 +26,19 @@ static const char *last_expected = NULL;
 
 
 %union {
-    int number;
+    long long number;
     char *string;
+    char char_val;
+    double float_val;
     struct ast_node *node;
 }
 
 %left UNARY_MINUS
 %token <number> INTEGER
-%token <string> IDENTIFIER
-%token INT MAIN MAINFUN
+%token <string> IDENTIFIER STRING_LITERAL
+%token <float_val> FLOAT_LITERAL
+%token <char_val> CHAR_LITERAL
+%token INT LONG LONGLONG FLOAT MAIN MAINFUN STR CONST UNSIGNED CHAR DOUBLE LONGDOUBLE
 %token BREAK IF ELSE WHILE FOR RETURN
 %token ADD SUB MUL DIV MOD
 %token ASSIGN
@@ -48,8 +52,8 @@ static const char *last_expected = NULL;
 %type <node> program global_declarations
 %type <node> declaration expression statement
 %type <node> statement_list expression_statement
-%type <node> selection_statement iteration_statement jump_statement
-%type <node> compound_statement
+%type <node> selection_statement iteration_statement jump_statement for_init expression_opt 
+%type <node> compound_statement type_specifier
 %type <node> assignment_expression logical_or_expression logical_and_expression
 %type <node> equality_expression relational_expression additive_expression
 %type <node> multiplicative_expression postfix_expression unary_expression primary_expression
@@ -65,27 +69,43 @@ program:
 
 global_declarations:
     global_declarations declaration { $$ = new_compound_node((ASTNode*[]){$1, $2}, 2); }
+    | global_declarations CONST declaration { }
+    | global_declarations CONST UNSIGNED declaration { }
     | /* empty */ { $$ = NULL; }
     ;
 
 declaration:
-    INT IDENTIFIER SEMICOLON { 
-        // if(lookup_symbol($2)){
-        //     report_error(@2.first_line, @2.first_colum,
-        //     "Redeclaration of variable", filename);
-        // }
-        // else{
-        //     add_symbol($2);
-        // }
-        $$ = new_decl_node($2); 
-
-        }
-    | INT IDENTIFIER ASSIGN expression SEMICOLON { $$ = new_decl_init_node($2, $4); }
+    type_specifier IDENTIFIER SEMICOLON {}
+    | type_specifier IDENTIFIER ASSIGN expression SEMICOLON { }
+    | CONST type_specifier IDENTIFIER SEMICOLON {}
+    | CONST type_specifier IDENTIFIER ASSIGN expression SEMICOLON { }
+    | UNSIGNED type_specifier IDENTIFIER SEMICOLON {}
+    | UNSIGNED type_specifier IDENTIFIER ASSIGN expression SEMICOLON {  }
+    | CONST UNSIGNED type_specifier IDENTIFIER SEMICOLON {}
+    | CONST UNSIGNED type_specifier IDENTIFIER ASSIGN expression SEMICOLON { }
+    | UNSIGNED CONST type_specifier IDENTIFIER SEMICOLON {}
+    | UNSIGNED CONST type_specifier IDENTIFIER ASSIGN expression SEMICOLON { }
+    
+    /* | STR IDENTIFIER SEMICOLON {} This is not valid actually*/
+    | STR IDENTIFIER ASSIGN expression SEMICOLON { $$ = new_decl_init_node($2, $4); }
     ;
+
+type_specifier
+    : INT {}
+    | LONG {}
+    | LONGLONG {}
+    | FLOAT {}
+    | DOUBLE {}
+    | LONGDOUBLE {}
+    | CHAR {}
+    /* | STR */
 
 statement:
     expression_statement
     | declaration
+    | CONST declaration { }
+    | CONST UNSIGNED declaration { }
+    | UNSIGNED declaration { }
     | compound_statement
     | selection_statement
     | iteration_statement
@@ -118,10 +138,19 @@ selection_statement:
 
 iteration_statement:
     WHILE LPAREN expression RPAREN compound_statement { $$ = new_while_node($3, $5); }
-    | FOR LPAREN declaration expression_statement expression RPAREN compound_statement {
-        $$ = new_for_node($3, $4, $5, $7);
+    | FOR LPAREN for_init expression_opt SEMICOLON expression_opt RPAREN compound_statement {
+        // $$ = new_for_node($3, $4, $5, $7);
       }
     ;
+
+for_init:
+    declaration
+    | expression_statement
+    | /* empty */ { $$ = NULL; }
+
+expression_opt:
+    expression
+    | /* empty */ { $$ = NULL; }
 
 jump_statement:
     BREAK SEMICOLON { $$ = new_break_node(); }
@@ -196,6 +225,15 @@ postfix_expression:
 primary_expression:
     IDENTIFIER { $$ = new_ident_node($1); }
     | INTEGER { $$ = new_int_node($1); }
+    | FLOAT_LITERAL { 
+        // $$ = new_float_node($1);
+        }
+    | STRING_LITERAL { 
+        // $$ = new_string_node($1);
+         }
+    | CHAR_LITERAL { 
+        // $$ = new_char_node($1);
+         }
     | LPAREN expression RPAREN { $$ = $2; }
     ;
 

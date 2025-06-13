@@ -14,8 +14,10 @@ extern int yychar;
 
 DIGIT    [0-9]
 INTEGER  [-+]?{DIGIT}+
+FLOAT    [-+]?([0-9]*\.[0-9]+|[0-9]+\.)([eE][-+]?[0-9]+)?  
 LETTER   [a-zA-Z_]
 ID       {LETTER}({LETTER}|{DIGIT})*
+STRING   \"([^"\\]|\\.)*\"
 WS       [ \t\n]
 
 %%
@@ -26,10 +28,26 @@ WS       [ \t\n]
 "while"       { return WHILE; }
 "for"         { return FOR; }
 "return"      { return RETURN; }
+"const"       { return CONST; }
+"unsigned"       { return UNSIGNED; }
 "int"{WS}+"main" { 
                 yylval.string = strdup("int main");
                 return MAINFUN;}
-
+'(\\.|[^'\\])'    {  // chars
+                    yylval.char_val = process_char(yytext); 
+                    return CHAR_LITERAL; 
+                  }
+{STRING}      { yylval.string = strdup(yytext);
+                return STRING_LITERAL;
+              }
+"char"{WS}*"*" { 
+                yylval.string = strdup("char*");
+                return STR;}
+"char"      { return CHAR; }
+"long"      { return LONG; }
+"long"{WS}+"long"      { return LONGLONG; }
+"double"      { return DOUBLE; }
+"long"{WS}+"double"    { return LONGDOUBLE; }
 "int"         { return INT; }
 "main"        { return MAIN; }
 
@@ -65,6 +83,7 @@ WS       [ \t\n]
 
 {ID}          { yylval.string = strdup(yytext); return IDENTIFIER; }
 {INTEGER}     { yylval.number = atoll(yytext); return INTEGER; }
+{FLOAT}       { yylval.float_val = atof(yytext); return FLOAT_LITERAL; }
 {WS}       ;
 .       {
     char error_msg[50];

@@ -221,3 +221,16 @@ void print_errors(void) {
         last_error = NULL;
     }
 }
+
+char process_char(const char *text) {
+    if (text[1] == '\\') {  
+        switch (text[2]) {
+            case 'n':  return '\n';
+            case 't':  return '\t';
+            case '\\': return '\\';
+            case '\'': return '\'';
+            default:   return text[2];
+        }
+    }
+    return text[1]; 
+}
