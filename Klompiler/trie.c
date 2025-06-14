@@ -35,7 +35,7 @@ int char_to_index(char c) {
 }
 
 // Insert a key into the trie
-void trie_insert(TrieNode *root, const char *key, bool is_cons, const int type) {
+void trie_insert(TrieNode *root, const char *key, bool is_cons, const int type, const int line) {
     TrieNode *current = root;
     for (int i = 0; key[i] != '\0'; i++) {
         int index = char_to_index(key[i]);
@@ -50,6 +50,7 @@ void trie_insert(TrieNode *root, const char *key, bool is_cons, const int type) 
     current->is_end_of_word = true;
     current->is_constant = is_cons;
     current->type = type;
+    current->line = line;
 }
 
 

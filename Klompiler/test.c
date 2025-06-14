@@ -5,7 +5,6 @@ char* st = "str";
 const unsigned char* si = "ss";
 
 int main() {
-    while (1)test++,it_works--;
     if(-10 < 0){}
     int y = -test;
     int z = -(-5);

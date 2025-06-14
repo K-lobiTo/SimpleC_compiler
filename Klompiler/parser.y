@@ -7,7 +7,7 @@
 
 extern int yylex();
 
-ASTNode *program_root = NULL;
+// ASTNode *program_root = NULL;
 
 // error reporting
 extern int yylineno;
@@ -60,22 +60,19 @@ static const char *last_expected = NULL;
 
 program:
     global_declarations MAINFUN LPAREN RPAREN compound_statement {
-        $$ = new_main_function_node("main", NULL, $5);
-        program_root = $$;
+        // program_root = $$;
     }
     ;
 
 global_declarations:
-    global_declarations declaration { $$ = new_compound_node((ASTNode*[]){$1, $2}, 2); }
+    global_declarations declaration { }
     | /* empty */ { $$ = NULL; }
     ;
 
 declaration:
     declaration_prefix type_specifier IDENTIFIER SEMICOLON {}
     | declaration_prefix type_specifier IDENTIFIER ASSIGN expression SEMICOLON { }
-    
-    /* | STR IDENTIFIER SEMICOLON {} This is not valid actually*/
-    | declaration_prefix STR IDENTIFIER ASSIGN expression SEMICOLON { $$ = new_decl_init_node($3, $5); }
+    | declaration_prefix STR IDENTIFIER ASSIGN expression SEMICOLON { }
     ;
 
 declaration_prefix
@@ -114,17 +111,17 @@ compound_statement:
     ;
 
 statement_list:
-    statement_list statement { $$ = new_compound_node((ASTNode*[]){$1, $2}, 2); }
+    statement_list statement { }
     | /* empty */ { $$ = NULL; }
     ;
 
 selection_statement:
-    IF LPAREN expression RPAREN compound_statement { $$ = new_if_node($3, $5, NULL); }
-    | IF LPAREN expression RPAREN compound_statement ELSE compound_statement { $$ = new_if_node($3, $5, $7); }
+    IF LPAREN expression RPAREN compound_statement { }
+    | IF LPAREN expression RPAREN compound_statement ELSE compound_statement { }
     ;
 
 iteration_statement:
-    WHILE LPAREN expression RPAREN compound_statement { $$ = new_while_node($3, $5); }
+    WHILE LPAREN expression RPAREN compound_statement { }
     | FOR LPAREN for_init expression_opt SEMICOLON expression_opt RPAREN compound_statement {
         // $$ = new_for_node($3, $4, $5, $7);
       }
@@ -139,8 +136,8 @@ expression_opt:
     | /* empty */ { $$ = NULL; }
 
 jump_statement:
-    BREAK SEMICOLON { $$ = new_break_node(); }
-    | RETURN expression SEMICOLON { $$ = new_return_node($2); }
+    BREAK SEMICOLON { }
+    | RETURN expression SEMICOLON { }
     ;
 
 expression:
@@ -148,69 +145,69 @@ expression:
     ;
 
 assignment_expression:
-    IDENTIFIER ASSIGN expression { $$ = new_assign_node(new_ident_node($1), $3); }
-    | IDENTIFIER PE expression { $$ = new_compound_assign_node($1, OP_PE, $3); }
-    | IDENTIFIER ME expression { $$ = new_compound_assign_node($1, OP_ME, $3); }
-    | IDENTIFIER MODE expression { $$ = new_compound_assign_node($1, OP_MODE, $3); }
-    | IDENTIFIER MULE expression { $$ = new_compound_assign_node($1, OP_MULE, $3); }
-    | IDENTIFIER DIVE expression { $$ = new_compound_assign_node($1, OP_DIVE, $3); }
+    IDENTIFIER ASSIGN expression { }
+    | IDENTIFIER PE expression { }
+    | IDENTIFIER ME expression { }
+    | IDENTIFIER MODE expression { }
+    | IDENTIFIER MULE expression { }
+    | IDENTIFIER DIVE expression { }
     | logical_or_expression
     ;
 
 logical_or_expression:
-    logical_or_expression OR logical_and_expression { $$ = new_binop_node(OP_OR, $1, $3); }
+    logical_or_expression OR logical_and_expression { }
     | logical_and_expression
     ;
 
 logical_and_expression:
-    logical_and_expression AND equality_expression { $$ = new_binop_node(OP_AND, $1, $3); }
+    logical_and_expression AND equality_expression { }
     | equality_expression
     ;
 
 equality_expression:
-    equality_expression EQ relational_expression { $$ = new_binop_node(OP_EQ, $1, $3); }
-    | equality_expression NE relational_expression { $$ = new_binop_node(OP_NE, $1, $3); }
+    equality_expression EQ relational_expression { }
+    | equality_expression NE relational_expression { }
     | relational_expression
     ;
 
 relational_expression:
-    relational_expression LT additive_expression { $$ = new_binop_node(OP_LT, $1, $3); }
-    | relational_expression LE additive_expression { $$ = new_binop_node(OP_LE, $1, $3); }
-    | relational_expression GT additive_expression { $$ = new_binop_node(OP_GT, $1, $3); }
-    | relational_expression GE additive_expression { $$ = new_binop_node(OP_GE, $1, $3); }
+    relational_expression LT additive_expression { }
+    | relational_expression LE additive_expression { }
+    | relational_expression GT additive_expression { }
+    | relational_expression GE additive_expression { }
     | additive_expression
     ;
 
 additive_expression:
-    additive_expression ADD multiplicative_expression { $$ = new_binop_node(OP_ADD, $1, $3); }
-    | additive_expression SUB multiplicative_expression { $$ = new_binop_node(OP_SUB, $1, $3); }
+    additive_expression ADD multiplicative_expression { }
+    | additive_expression SUB multiplicative_expression { }
     | multiplicative_expression
     ;
 
 multiplicative_expression:
-    multiplicative_expression MUL unary_expression { $$ = new_binop_node(OP_MUL, $1, $3); }
-    | multiplicative_expression DIV unary_expression { $$ = new_binop_node(OP_DIV, $1, $3); }
-    | multiplicative_expression MOD unary_expression { $$ = new_binop_node(OP_MOD, $1, $3); }
+    multiplicative_expression MUL unary_expression { }
+    | multiplicative_expression DIV unary_expression { }
+    | multiplicative_expression MOD unary_expression { }
     | unary_expression
     ;
 
 unary_expression:
     postfix_expression
-    | INC IDENTIFIER { $$ = new_prefix_op_node(OP_INC, $2); }
-    | DEC IDENTIFIER { $$ = new_prefix_op_node(OP_DEC, $2); }
-    | NOT unary_expression { $$ = new_not_node($2); }
-    | SUB unary_expression %prec UNARY_MINUS { /* maybe something is missing here */ }
+    | INC IDENTIFIER { }
+    | DEC IDENTIFIER { }
+    | NOT unary_expression { }
+    | SUB unary_expression %prec UNARY_MINUS { }
     ;
 
 postfix_expression:
     primary_expression
-    | IDENTIFIER INC { $$ = new_postfix_op_node(OP_INC, $1); }
-    | IDENTIFIER DEC { $$ = new_postfix_op_node(OP_DEC, $1); }
+    | IDENTIFIER INC { }
+    | IDENTIFIER DEC { }
     ;
 
 primary_expression:
-    IDENTIFIER { $$ = new_ident_node($1); }
-    | INTEGER { $$ = new_int_node($1); }
+    IDENTIFIER { }
+    | INTEGER {  }
     | FLOAT_LITERAL { 
         // $$ = new_float_node($1);
         }
@@ -289,6 +286,7 @@ const char *token_name(int token) {
         }
     }
 }
+
 
 void yyerror(const char *msg) {
     if (yychar != YYEMPTY && yychar != YYEOF) {

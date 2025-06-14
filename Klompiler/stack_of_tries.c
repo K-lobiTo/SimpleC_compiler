@@ -39,14 +39,14 @@ void free_scope_stack(ScopeStack **stack_ptr) {
     *stack_ptr = NULL;
 }
 
-bool insert_in_current_scope(ScopeStack *stack, const char *symbol, const bool is_const, const int type) {
+bool insert_in_current_scope(ScopeStack *stack, const char *symbol, const bool is_const, const int type, const int line) {
     if(!stack)return false;
     assert(stack);
     if (stack->top < 0) return false;
     if (trie_search(stack->scopes[stack->top], symbol)) {
         return false;  // Already exists in current scope (redeclaration error)
     }
-    trie_insert(stack->scopes[stack->top], symbol, is_const, type);
+    trie_insert(stack->scopes[stack->top], symbol, is_const, type, line);
     return true;
 }
 
@@ -64,4 +64,8 @@ bool search_in_all_scopes(const ScopeStack *stack, const char *symbol) {
 
 bool search_in_current_scope(const ScopeStack *stack, const char *symbol) {
     return (stack->top >= 0) && trie_search(stack->scopes[stack->top], symbol);
+}
+
+bool search_in_global_scope(const ScopeStack *stack, const char *symbol) {
+    return (stack->top >= 0) && trie_search(stack->scopes[0], symbol);
 }
