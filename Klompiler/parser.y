@@ -48,7 +48,7 @@ static const char *last_expected = NULL;
 
 
 %type <node> program global_declarations
-%type <node> declaration expression statement
+%type <node> declaration expression statement declaration_prefix
 %type <node> statement_list expression_statement
 %type <node> selection_statement iteration_statement jump_statement for_init expression_opt 
 %type <node> compound_statement type_specifier
@@ -73,20 +73,19 @@ global_declarations:
     ;
 
 declaration:
-    type_specifier IDENTIFIER SEMICOLON {}
-    | type_specifier IDENTIFIER ASSIGN expression SEMICOLON { }
-    | CONST type_specifier IDENTIFIER SEMICOLON {}
-    | CONST type_specifier IDENTIFIER ASSIGN expression SEMICOLON { }
-    | UNSIGNED type_specifier IDENTIFIER SEMICOLON {}
-    | UNSIGNED type_specifier IDENTIFIER ASSIGN expression SEMICOLON {  }
-    | CONST UNSIGNED type_specifier IDENTIFIER SEMICOLON {}
-    | CONST UNSIGNED type_specifier IDENTIFIER ASSIGN expression SEMICOLON { }
-    | UNSIGNED CONST type_specifier IDENTIFIER SEMICOLON {}
-    | UNSIGNED CONST type_specifier IDENTIFIER ASSIGN expression SEMICOLON { }
+    declaration_prefix type_specifier IDENTIFIER SEMICOLON {}
+    | declaration_prefix type_specifier IDENTIFIER ASSIGN expression SEMICOLON { }
     
     /* | STR IDENTIFIER SEMICOLON {} This is not valid actually*/
-    | STR IDENTIFIER ASSIGN expression SEMICOLON { $$ = new_decl_init_node($2, $4); }
+    | declaration_prefix STR IDENTIFIER ASSIGN expression SEMICOLON { $$ = new_decl_init_node($2, $4); }
     ;
+
+declaration_prefix
+    : CONST {}
+    | UNSIGNED {}
+    | UNSIGNED CONST {}
+    | CONST UNSIGNED {}
+    | { $$ = NULL;}
 
 type_specifier
     : INT {}
@@ -101,9 +100,6 @@ type_specifier
 statement:
     expression_statement {}
     | declaration {}
-    | CONST declaration { }
-    | CONST UNSIGNED declaration { }
-    | UNSIGNED declaration { }
     | compound_statement {}
     | selection_statement {}
     | iteration_statement {}

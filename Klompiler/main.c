@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "compiler.h"
+#include "trie.h"
 
 extern FILE *yyin;
 extern int yyparse();
@@ -19,6 +20,37 @@ int main(int argc, char *argv[]) {
         perror("Error opening input file");
         return 1;
     }
+
+    // TRIE TESTS
+    // TRIE TESTS
+    // TRIE TESTS
+    // TRIE TESTS
+    // TRIE TESTS
+
+        TrieNode *root = trie_create_node();
+    
+    // Insert valid variable names
+    trie_insert(root, "myVar", 0);
+    trie_insert(root, "counter1", 1);
+    trie_insert(root, "_temp_value", 1);
+    trie_insert(root, "MAX_SIZE", 0);
+    
+    // Test searches
+    printf("Search 'myVar': %s\n", trie_search(root, "myVar") ? "Found" : "Not found");
+    printf("isConst? 'myVar': %s\n", inTrieConst(trie_search_node(root, "myVar")) ? "isCOnst" : "Not const");
+    printf("Search 'unknown': %s\n", trie_search(root, "unknown") ? "Found" : "Not found");
+    printf("Search 'counter1': %s\n", trie_search(root, "counter1") ? "Found" : "Not found");
+    printf("isConst? 'counter1': %s\n", inTrieConst(trie_search_node(root, "counter1")) ? "isCOnst" : "Not const");
+    printf("Search '1counter': %s\n", trie_search(root, "1counter") ? "Found" : "Not found"); // Invalid in C
+    
+    // Cleanup
+    trie_free(root);
+    return 0;
+    // TRIE TESTS
+    // TRIE TESTS
+    // TRIE TESTS
+    // TRIE TESTS
+    // TRIE TESTS
 
     yyin = input;
     // Parse the input file
