@@ -23,6 +23,7 @@ WS       [ \t\n]
 %%
 
 "break"       { return BREAK; }
+"continue"    { return CONTINUE; }
 "if"          { return IF; }
 "else"        { return ELSE; }
 "while"       { return WHILE; }

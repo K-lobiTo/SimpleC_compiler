@@ -1,15 +1,16 @@
 %{
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "compiler.h"
+#include "ast.h"
+
 
 extern int yylex();
 
-// ASTNode *program_root = NULL;
-
-// error reporting
+#include "ast.h"
 extern int yylineno;
 void yyerror(const char *msg);
 const char *token_name(int token);
@@ -17,6 +18,11 @@ const char *token_name(int token);
 extern int yychar;
 static const char *last_expected = NULL;
 
+// Global AST root and symbol table
+ASTNode *program_root = NULL;
+ScopeStack *symbol_table = NULL;
+
+ASTNode *current_compound = NULL;
 %}
 
 %define parse.error verbose
@@ -28,7 +34,8 @@ static const char *last_expected = NULL;
     char *string;
     char char_val;
     double float_val;
-    struct ast_node *node;
+    struct ASTNode *node;
+    int var_type;
 }
 
 %left UNARY_MINUS
@@ -37,7 +44,7 @@ static const char *last_expected = NULL;
 %token <float_val> FLOAT_LITERAL
 %token <char_val> CHAR_LITERAL
 %token INT LONG LONGLONG FLOAT MAIN MAINFUN STR CONST UNSIGNED CHAR DOUBLE LONGDOUBLE
-%token BREAK IF ELSE WHILE FOR RETURN
+%token BREAK IF ELSE WHILE FOR RETURN CONTINUE
 %token ADD SUB MUL DIV MOD
 %token ASSIGN
 %token SEMICOLON COMMA
@@ -47,11 +54,12 @@ static const char *last_expected = NULL;
 %token INC DEC PE ME MULE MODE DIVE
 
 
-%type <node> program global_declarations
+%type <var_type> type_specifier
+%type <node> program_start program global_declarations
 %type <node> declaration expression statement declaration_prefix
 %type <node> statement_list expression_statement
 %type <node> selection_statement iteration_statement jump_statement for_init expression_opt 
-%type <node> compound_statement type_specifier
+%type <node> compound_statement 
 %type <node> assignment_expression logical_or_expression logical_and_expression
 %type <node> equality_expression relational_expression additive_expression
 %type <node> multiplicative_expression postfix_expression unary_expression primary_expression
@@ -59,46 +67,72 @@ static const char *last_expected = NULL;
 %%
 
 program:
-    global_declarations MAINFUN LPAREN RPAREN compound_statement {
-        // program_root = $$;
+    program_start
+    global_declarations MAINFUN LPAREN RPAREN compound_statement
+    {
+        program_root = ast_new_program(symbol_table);
+        if (program_root && $6) {
+            $$ = ast_add_statement(program_root, $6);
+        } else {
+            $$ = NULL;
+            yyerror("Failed to create program AST");
+        }
     }
     ;
 
+program_start:
+    {
+        // Initialize symbol table
+        symbol_table = create_scope_stack(10);
+        push_scope(symbol_table);
+        $$ = ast_new_compound_statement(yylineno);
+    }
+
 global_declarations:
-    global_declarations declaration { }
-    | /* empty */ { $$ = NULL; }
+    global_declarations declaration { $$ = ast_add_statement($1, $2); }
+    | /* empty */ { $$ = ast_new_compound_statement(yylineno); }
     ;
 
 declaration:
-    declaration_prefix type_specifier IDENTIFIER SEMICOLON {}
-    | declaration_prefix type_specifier IDENTIFIER ASSIGN expression SEMICOLON { }
-    | declaration_prefix STR IDENTIFIER ASSIGN expression SEMICOLON { }
+    declaration_prefix type_specifier IDENTIFIER SEMICOLON {
+        $$ = ast_new_declaration($3, $2, NULL, yylineno);
+        free($3);
+    }
+    | declaration_prefix type_specifier IDENTIFIER ASSIGN expression SEMICOLON {
+        $$ = ast_new_declaration($3, $2, $5, yylineno);
+        free($3);
+    }
+    | declaration_prefix STR IDENTIFIER ASSIGN expression SEMICOLON {
+        $$ = ast_new_declaration($3, TYPE_STR, $5, yylineno);
+        free($3);
+    }
     ;
 
-declaration_prefix
-    : CONST {}
-    | UNSIGNED {}
-    | UNSIGNED CONST {}
-    | CONST UNSIGNED {}
-    | { $$ = NULL;}
+declaration_prefix:
+    CONST { $$ = NULL; }
+    | UNSIGNED { $$ = NULL; }
+    | UNSIGNED CONST { $$ = NULL; }
+    | CONST UNSIGNED { $$ = NULL; }
+    | { $$ = NULL; }
+    ;
 
-type_specifier
-    : INT {}
-    | LONG {}
-    | LONGLONG {}
-    | FLOAT {}
-    | DOUBLE {}
-    | LONGDOUBLE {}
-    | CHAR {}
-    /* | STR */
+type_specifier:
+    INT { $$ = TYPE_INT; }
+    | LONG { $$ = TYPE_LONG; }
+    | LONGLONG { $$ = TYPE_LONGLONG; }
+    | FLOAT { $$ = TYPE_FLOAT; }
+    | DOUBLE { $$ = TYPE_DOUBLE; }
+    | LONGDOUBLE { $$ = TYPE_LONGDOUBLE; }
+    | CHAR { $$ = TYPE_CHAR; }
+    ;
 
 statement:
-    expression_statement {}
-    | declaration {}
-    | compound_statement {}
-    | selection_statement {}
-    | iteration_statement {}
-    | jump_statement {}
+    expression_statement { $$ = $1; }
+    | declaration { $$ = $1; }
+    | compound_statement { $$ = $1; }
+    | selection_statement { $$ = $1; }
+    | iteration_statement { $$ = $1; }
+    | jump_statement { $$ = $1; }
     ;
 
 expression_statement:
@@ -107,116 +141,192 @@ expression_statement:
     ;
 
 compound_statement:
-    LBRACE statement_list RBRACE { $$ = $2; }
+    LBRACE {  push_scope(symbol_table);
+        current_compound = ast_new_compound_statement(yylineno);}
+    statement_list RBRACE { 
+        $$ = current_compound;
+        pop_scope(symbol_table);}
     ;
 
 statement_list:
-    statement_list statement { }
-    | /* empty */ { $$ = NULL; }
+    statement_list statement { 
+        if (!$1 || !$2) {
+            yyerror("Null statement in statement list");
+            YYABORT;
+        }
+        $$ = ast_add_statement($1, $2); }
+    | /* empty */ { $$ = ast_new_compound_statement(yylineno); }
     ;
 
 selection_statement:
-    IF LPAREN expression RPAREN compound_statement { }
-    | IF LPAREN expression RPAREN compound_statement ELSE compound_statement { }
+    IF LPAREN expression RPAREN compound_statement {
+        $$ = ast_new_if($3, $5, NULL, yylineno);
+    }
+    | IF LPAREN expression RPAREN compound_statement ELSE compound_statement {
+        $$ = ast_new_if($3, $5, $7, yylineno);
+    }
     ;
 
 iteration_statement:
-    WHILE LPAREN expression RPAREN compound_statement { }
+    WHILE LPAREN expression RPAREN compound_statement {
+        $$ = ast_new_while($3, $5, yylineno);
+    }
     | FOR LPAREN for_init expression_opt SEMICOLON expression_opt RPAREN compound_statement {
-        // $$ = new_for_node($3, $4, $5, $7);
-      }
+        $$ = ast_new_for($3, $4, $6, $8, yylineno);
+    }
     ;
 
 for_init:
-    declaration { }
-    | expression_statement { }
+    declaration { $$ = $1; }
+    | expression_statement { $$ = $1; }
+    ;
 
 expression_opt:
-    expression
+    expression { $$ = $1; }
     | /* empty */ { $$ = NULL; }
+    ;
 
 jump_statement:
-    BREAK SEMICOLON { }
-    | RETURN expression SEMICOLON { }
+    BREAK SEMICOLON { $$ = ast_new_break(yylineno); }
+    | CONTINUE SEMICOLON { $$ = ast_new_continue(yylineno); }
+    | RETURN expression SEMICOLON { $$ = ast_new_return($2, yylineno); }
     ;
 
 expression:
-    assignment_expression
+    assignment_expression { $$ = $1; }
     ;
 
 assignment_expression:
-    IDENTIFIER ASSIGN expression { }
-    | IDENTIFIER PE expression { }
-    | IDENTIFIER ME expression { }
-    | IDENTIFIER MODE expression { }
-    | IDENTIFIER MULE expression { }
-    | IDENTIFIER DIVE expression { }
-    | logical_or_expression
+    IDENTIFIER ASSIGN expression {
+        $$ = ast_new_binary_op(OP_ASSIGN, ast_new_identifier($1, yylineno), $3, yylineno);
+        free($1);
+    }
+    | IDENTIFIER PE expression {
+        $$ = ast_new_binary_op(OP_PE, ast_new_identifier($1, yylineno), $3, yylineno);
+        free($1);
+    }
+    | IDENTIFIER ME expression {
+        $$ = ast_new_binary_op(OP_ME, ast_new_identifier($1, yylineno), $3, yylineno);
+        free($1);
+    }
+    | IDENTIFIER MODE expression {
+        $$ = ast_new_binary_op(OP_MODE, ast_new_identifier($1, yylineno), $3, yylineno);
+        free($1);
+    }
+    | IDENTIFIER MULE expression {
+        $$ = ast_new_binary_op(OP_MULE, ast_new_identifier($1, yylineno), $3, yylineno);
+        free($1);
+    }
+    | IDENTIFIER DIVE expression {
+        $$ = ast_new_binary_op(OP_DIVE, ast_new_identifier($1, yylineno), $3, yylineno);
+        free($1);
+    }
+    | logical_or_expression { $$ = $1; }
     ;
 
+
 logical_or_expression:
-    logical_or_expression OR logical_and_expression { }
-    | logical_and_expression
+    logical_or_expression OR logical_and_expression { 
+        $$ = ast_new_binary_op(OP_OR, $1, $3, yylineno);
+    }
+    | logical_and_expression { $$ = $1; }
     ;
 
 logical_and_expression:
-    logical_and_expression AND equality_expression { }
-    | equality_expression
+    logical_and_expression AND equality_expression { 
+        $$ = ast_new_binary_op(OP_AND, $1, $3, yylineno);
+    }
+    | equality_expression { $$ = $1; }
     ;
 
 equality_expression:
-    equality_expression EQ relational_expression { }
-    | equality_expression NE relational_expression { }
-    | relational_expression
+    equality_expression EQ relational_expression { 
+        $$ = ast_new_binary_op(OP_EQ, $1, $3, yylineno);
+    }
+    | equality_expression NE relational_expression { 
+        $$ = ast_new_binary_op(OP_NE, $1, $3, yylineno);
+    }
+    | relational_expression { $$ = $1; }
     ;
 
 relational_expression:
-    relational_expression LT additive_expression { }
-    | relational_expression LE additive_expression { }
-    | relational_expression GT additive_expression { }
-    | relational_expression GE additive_expression { }
-    | additive_expression
+    relational_expression LT additive_expression { 
+        $$ = ast_new_binary_op(OP_LT, $1, $3, yylineno);
+    }
+    | relational_expression LE additive_expression { 
+        $$ = ast_new_binary_op(OP_LE, $1, $3, yylineno);
+    }
+    | relational_expression GT additive_expression { 
+        $$ = ast_new_binary_op(OP_GT, $1, $3, yylineno);
+    }
+    | relational_expression GE additive_expression { 
+        $$ = ast_new_binary_op(OP_GE, $1, $3, yylineno);
+    }
+    | additive_expression { $$ = $1; }
     ;
 
 additive_expression:
-    additive_expression ADD multiplicative_expression { }
-    | additive_expression SUB multiplicative_expression { }
-    | multiplicative_expression
+    additive_expression ADD multiplicative_expression { 
+        $$ = ast_new_binary_op(OP_ADD, $1, $3, yylineno);
+    }
+    | additive_expression SUB multiplicative_expression { 
+        $$ = ast_new_binary_op(OP_SUB, $1, $3, yylineno);
+    }
+    | multiplicative_expression { $$ = $1; }
     ;
 
 multiplicative_expression:
-    multiplicative_expression MUL unary_expression { }
-    | multiplicative_expression DIV unary_expression { }
-    | multiplicative_expression MOD unary_expression { }
-    | unary_expression
+    multiplicative_expression MUL unary_expression { 
+        $$ = ast_new_binary_op(OP_MUL, $1, $3, yylineno);
+    }
+    | multiplicative_expression DIV unary_expression { 
+        $$ = ast_new_binary_op(OP_DIV, $1, $3, yylineno);
+    }
+    | multiplicative_expression MOD unary_expression { 
+        $$ = ast_new_binary_op(OP_MOD, $1, $3, yylineno);
+    }
+    | unary_expression { $$ = $1; }
     ;
 
 unary_expression:
-    postfix_expression
-    | INC IDENTIFIER { }
-    | DEC IDENTIFIER { }
-    | NOT unary_expression { }
-    | SUB unary_expression %prec UNARY_MINUS { }
+    postfix_expression { $$ = $1; }
+    | INC IDENTIFIER { 
+        $$ = ast_new_unary_op(OP_PRE_INC, ast_new_identifier($2, yylineno), yylineno);
+        free($2);
+    }
+    | DEC IDENTIFIER { 
+        $$ = ast_new_unary_op(OP_PRE_DEC, ast_new_identifier($2, yylineno), yylineno);
+        free($2);
+    }
+    | NOT unary_expression { 
+        $$ = ast_new_unary_op(OP_NOT, $2, yylineno);
+    }
+    | SUB unary_expression %prec UNARY_MINUS { 
+        $$ = ast_new_unary_op(OP_NEG, $2, yylineno);
+    }
     ;
 
 postfix_expression:
-    primary_expression
-    | IDENTIFIER INC { }
-    | IDENTIFIER DEC { }
+    primary_expression { $$ = $1; }
+    | IDENTIFIER INC { 
+        $$ = ast_new_unary_op(OP_POST_INC, ast_new_identifier($1, yylineno), yylineno);
+        free($1);
+    }
+    | IDENTIFIER DEC { 
+        $$ = ast_new_unary_op(OP_POST_DEC, ast_new_identifier($1, yylineno), yylineno);
+        free($1);
+    }
     ;
 
 primary_expression:
-    IDENTIFIER { }
-    | INTEGER {  }
-    | FLOAT_LITERAL { 
-        // $$ = new_float_node($1);
-        }
-    | STRING_LITERAL { 
-        // $$ = new_string_node($1);
-         }
-    | CHAR_LITERAL { 
-        // $$ = new_char_node($1);
-         }
+    IDENTIFIER {
+        $$ = ast_new_identifier($1, yylineno);
+        free($1);
+    }
+    | INTEGER { $$ = ast_new_integer($1, yylineno); }
+    | FLOAT_LITERAL { $$ = ast_new_float($1, yylineno); }
+    | STRING_LITERAL { $$ = ast_new_string($1, yylineno); free($1); }
+    | CHAR_LITERAL { $$ = ast_new_char($1, yylineno); }
     | LPAREN expression RPAREN { $$ = $2; }
     ;
 
