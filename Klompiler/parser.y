@@ -67,8 +67,6 @@ program:
 
 global_declarations:
     global_declarations declaration { $$ = new_compound_node((ASTNode*[]){$1, $2}, 2); }
-    | global_declarations CONST declaration { }
-    | global_declarations CONST UNSIGNED declaration { }
     | /* empty */ { $$ = NULL; }
     ;
 
@@ -77,7 +75,7 @@ declaration:
     | declaration_prefix type_specifier IDENTIFIER ASSIGN expression SEMICOLON { }
     
     /* | STR IDENTIFIER SEMICOLON {} This is not valid actually*/
-    | declaration_prefix STR IDENTIFIER ASSIGN expression SEMICOLON { $$ = new_decl_init_node($2, $4); }
+    | declaration_prefix STR IDENTIFIER ASSIGN expression SEMICOLON { $$ = new_decl_init_node($3, $5); }
     ;
 
 declaration_prefix

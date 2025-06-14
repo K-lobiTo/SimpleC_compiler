@@ -3,7 +3,7 @@ CFLAGS = -g -Wall
 
 all: compiler
 
-compiler: lexer.yy.c parser.tab.c compiler.c main.c trie.c
+compiler: lexer.yy.c parser.tab.c compiler.c main.c trie.c stack_of_tries.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 lexer.yy.c: lexer.l parser.tab.h

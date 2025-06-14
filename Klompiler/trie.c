@@ -1,4 +1,5 @@
 //trie.c
+#include <assert.h>
 #include "trie.h"
 #include <stdlib.h>
 #include <string.h>
@@ -34,7 +35,7 @@ int char_to_index(char c) {
 }
 
 // Insert a key into the trie
-void trie_insert(TrieNode *root, const char *key, bool is_cons) {
+void trie_insert(TrieNode *root, const char *key, bool is_cons, const int type) {
     TrieNode *current = root;
     for (int i = 0; key[i] != '\0'; i++) {
         int index = char_to_index(key[i]);
@@ -48,9 +49,12 @@ void trie_insert(TrieNode *root, const char *key, bool is_cons) {
     }
     current->is_end_of_word = true;
     current->is_constant = is_cons;
+    current->type = type;
 }
 
 
+
+// Search for a key in the trie (return the Node)
 TrieNode* trie_search_node(TrieNode *root, const char *key){
     TrieNode *current = root;
     for (int i = 0; key[i] != '\0'; i++) {
@@ -83,6 +87,7 @@ bool inTrieConst(TrieNode *node){
 // Free trie memory
 void trie_free(TrieNode *root) {
     if (!root) return;
+    assert(root);
     
     for (int i = 0; i < TRIE_CHAR_SET_SIZE; i++) {
         if (root->children[i]) {
