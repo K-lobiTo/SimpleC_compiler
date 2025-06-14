@@ -141,4 +141,5 @@ void free_ast(ASTNode *node);
 
 void compiler_error(const char *msg);
 void print_errors(void);
+char process_char(const char *text);
 #endif

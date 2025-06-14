@@ -9,12 +9,11 @@ extern int yylex();
 
 ASTNode *program_root = NULL;
 
-// Enhanced error reporting
+// error reporting
 extern int yylineno;
 void yyerror(const char *msg);
 const char *token_name(int token);
 
-// For error reporting
 extern int yychar;
 static const char *last_expected = NULL;
 
@@ -23,7 +22,6 @@ static const char *last_expected = NULL;
 %define parse.error verbose
 %define parse.lac full
 %token-table
-
 
 %union {
     long long number;
@@ -101,15 +99,15 @@ type_specifier
     /* | STR */
 
 statement:
-    expression_statement
-    | declaration
+    expression_statement {}
+    | declaration {}
     | CONST declaration { }
     | CONST UNSIGNED declaration { }
     | UNSIGNED declaration { }
-    | compound_statement
-    | selection_statement
-    | iteration_statement
-    | jump_statement
+    | compound_statement {}
+    | selection_statement {}
+    | iteration_statement {}
+    | jump_statement {}
     ;
 
 expression_statement:
@@ -129,11 +127,6 @@ statement_list:
 selection_statement:
     IF LPAREN expression RPAREN compound_statement { $$ = new_if_node($3, $5, NULL); }
     | IF LPAREN expression RPAREN compound_statement ELSE compound_statement { $$ = new_if_node($3, $5, $7); }
-    | IF error %prec LBRACE {  // Add precedence
-        last_expected = "expected '(' after 'if'";
-        yyerrok;  // Add error recovery
-        YYERROR;
-    }
     ;
 
 iteration_statement:
@@ -144,9 +137,8 @@ iteration_statement:
     ;
 
 for_init:
-    declaration
-    | expression_statement
-    | /* empty */ { $$ = NULL; }
+    declaration { }
+    | expression_statement { }
 
 expression_opt:
     expression
