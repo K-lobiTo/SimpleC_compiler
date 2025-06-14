@@ -3,29 +3,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "compiler.h"
 
+
+
 ASTNode *ast_new_program(ScopeStack *symbol_table) {
-    ASTNode *node = malloc(sizeof(ASTNode));
+    ASTNode *node = calloc(1, sizeof(ASTNode));
+    if(!node) return NULL;
+
     node->type = NODE_PROGRAM;
     node->symbol_table = symbol_table;
     node->children = NULL;
     node->children_count = 0;
+    node->line_number = 0;
     return node;
 }
 
 ASTNode *ast_new_declaration(char *name, int type, ASTNode *init_value, int line) {
     ASTNode *node = malloc(sizeof(ASTNode));
+    if(!node) return NULL;
+
     node->type = NODE_DECLARATION;
     node->line_number = line;
     node->var_name = strdup(name);
     node->var_type = type;
+    node->is_constant = false;
     node->init_value = init_value;
     return node;
 }
 
 ASTNode *ast_new_identifier(char *name, int line) {
     ASTNode *node = malloc(sizeof(ASTNode));
+    if(!node) return NULL;
+
     node->type = NODE_IDENTIFIER;
     node->line_number = line;
     node->string_value = strdup(name);
@@ -34,6 +45,8 @@ ASTNode *ast_new_identifier(char *name, int line) {
 
 ASTNode *ast_new_integer(long long value, int line) {
     ASTNode *node = malloc(sizeof(ASTNode));
+    if(!node) return NULL;
+
     node->type = NODE_INTEGER;
     node->line_number = line;
     node->int_value = value;
@@ -42,6 +55,8 @@ ASTNode *ast_new_integer(long long value, int line) {
 
 ASTNode *ast_new_float(double value, int line) {
     ASTNode *node = malloc(sizeof(ASTNode));
+    if(!node) return NULL;
+
     node->type = NODE_FLOAT;
     node->line_number = line;
     node->float_value = value;
@@ -50,6 +65,8 @@ ASTNode *ast_new_float(double value, int line) {
 
 ASTNode *ast_new_string(char *value, int line) {
     ASTNode *node = malloc(sizeof(ASTNode));
+    if(!node) return NULL;
+
     node->type = NODE_STRING;
     node->line_number = line;
     node->string_value = strdup(value);
@@ -58,6 +75,8 @@ ASTNode *ast_new_string(char *value, int line) {
 
 ASTNode *ast_new_char(char value, int line) {
     ASTNode *node = malloc(sizeof(ASTNode));
+    if(!node) return NULL;
+
     node->type = NODE_CHAR;
     node->line_number = line;
     node->char_value = value;
@@ -66,6 +85,8 @@ ASTNode *ast_new_char(char value, int line) {
 
 ASTNode *ast_new_binary_op(OperatorType op, ASTNode *left, ASTNode *right, int line) {
     ASTNode *node = malloc(sizeof(ASTNode));
+    if(!node) return NULL;
+
     node->type = NODE_BINARY_OP;
     node->line_number = line;
     node->op = op;
@@ -76,6 +97,8 @@ ASTNode *ast_new_binary_op(OperatorType op, ASTNode *left, ASTNode *right, int l
 
 ASTNode *ast_new_unary_op(OperatorType op, ASTNode *expr, int line) {
     ASTNode *node = malloc(sizeof(ASTNode));
+    if(!node) return NULL;
+
     node->type = NODE_UNARY_OP;
     node->line_number = line;
     node->op = op;
@@ -86,6 +109,8 @@ ASTNode *ast_new_unary_op(OperatorType op, ASTNode *expr, int line) {
 
 ASTNode *ast_new_if(ASTNode *cond, ASTNode *then_part, ASTNode *else_part, int line) {
     ASTNode *node = malloc(sizeof(ASTNode));
+    if(!node) return NULL;
+
     node->type = NODE_IF;
     node->line_number = line;
     node->cond = cond;
@@ -96,6 +121,8 @@ ASTNode *ast_new_if(ASTNode *cond, ASTNode *then_part, ASTNode *else_part, int l
 
 ASTNode *ast_new_while(ASTNode *cond, ASTNode *body, int line) {
     ASTNode *node = malloc(sizeof(ASTNode));
+    if(!node) return NULL;
+
     node->type = NODE_WHILE;
     node->line_number = line;
     node->cond = cond;
@@ -105,6 +132,8 @@ ASTNode *ast_new_while(ASTNode *cond, ASTNode *body, int line) {
 
 ASTNode *ast_new_for(ASTNode *init, ASTNode *cond, ASTNode *step, ASTNode *body, int line) {
     ASTNode *node = malloc(sizeof(ASTNode));
+    if(!node) return NULL;
+
     node->type = NODE_FOR;
     node->line_number = line;
     node->init = init;
@@ -116,6 +145,8 @@ ASTNode *ast_new_for(ASTNode *init, ASTNode *cond, ASTNode *step, ASTNode *body,
 
 ASTNode *ast_new_compound_statement(int line) {
     ASTNode *node = malloc(sizeof(ASTNode));
+    if(!node) return NULL;
+
     node->type = NODE_COMPOUND;
     node->line_number = line;
     node->children = NULL;
@@ -124,14 +155,32 @@ ASTNode *ast_new_compound_statement(int line) {
 }
 
 ASTNode *ast_add_statement(ASTNode *compound, ASTNode *stmt) {
-    if (compound->type != NODE_COMPOUND) {
+    // Validate inputs
+    if (!compound || !stmt) {
+        compiler_error("Null pointer passed to ast_add_statement");
         return NULL;
     }
+
+    if (compound->type != NODE_COMPOUND && compound->type != NODE_PROGRAM) {
+        compiler_error("Cannot add statement to non-compound node");
+        return NULL;
+    }
+
+    // Calculate new size
+    size_t new_size = compound->children_count + 1;
     
-    compound->children_count++;
-    compound->children = realloc(compound->children, 
-                                compound->children_count * sizeof(ASTNode *));
-    compound->children[compound->children_count - 1] = stmt;
+    // Reallocate memory
+    ASTNode **new_children = realloc(compound->children, new_size * sizeof(ASTNode *));
+    if (!new_children) {
+        compiler_error("Memory allocation failed in ast_add_statement");
+        return NULL;
+    }
+
+    // Update structure
+    compound->children = new_children;
+    compound->children[compound->children_count] = stmt;  // Note: no -1 here
+    compound->children_count = new_size;
+    
     return compound;
 }
 
@@ -187,7 +236,7 @@ void ast_free(ASTNode *node) {
         case NODE_IDENTIFIER:
         case NODE_STRING:
         case NODE_DECLARATION:
-            free(node->string_value);
+            if (node->string_value) free(node->string_value);
             break;
             
         case NODE_BINARY_OP:
@@ -197,12 +246,14 @@ void ast_free(ASTNode *node) {
             break;
             
         case NODE_IF:
-        case NODE_CONTINUE:
-            break;
-        case NODE_WHILE:
             ast_free(node->cond);
             ast_free(node->then_part);
             ast_free(node->else_part);
+            break;
+            
+        case NODE_WHILE:
+            ast_free(node->cond);
+            ast_free(node->then_part);
             break;
             
         case NODE_FOR:
@@ -219,7 +270,12 @@ void ast_free(ASTNode *node) {
             free(node->children);
             break;
             
+        case NODE_RETURN:
+            ast_free(node->left); // Return expression
+            break;
+            
         default:
+            // For simple nodes like INTEGER, FLOAT, CHAR
             break;
     }
     
@@ -227,73 +283,103 @@ void ast_free(ASTNode *node) {
 }
 
 
-void semantic_analyze(ASTNode *node) {
+void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
     if (!node) return;
+    assert(symbol_table);
     
+    // Set symbol table reference for all nodes
+    node->symbol_table = symbol_table;
+    
+    assert(node->type);
+    printf("NodeType : %d, NodeLineNo: %d", node->type, node->line_number);
+    if (node->type < NODE_PROGRAM || node->type > NODE_CONTINUE) {
+        fprintf(stderr, "Error: Invalid node type %d at line %d\n", node->type, node->line_number);
+        abort();
+    }
     switch (node->type) {
         case NODE_DECLARATION: {
             // Check if variable is already declared in current scope
-            if (search_in_current_scope(node->symbol_table, node->var_name)) {
+            if (search_in_current_scope(symbol_table, node->var_name)) {
                 char error_msg[100];
                 snprintf(error_msg, sizeof(error_msg), 
-                         "Redeclaration of variable '%s' in the same scope", node->var_name);
+                        "Redeclaration of variable '%s' at line %d", 
+                        node->var_name, node->line_number);
                 compiler_error(error_msg);
             } else {
-                // Insert into symbol table (type doesn't matter for your requirements)
-                insert_in_current_scope(node->symbol_table, node->var_name, false, 0, node->line_number);
+                // Insert into symbol table
+                printf("Declaring %s as %s (type: %d, line: %d)\n",
+                    node->var_name,
+                    node->is_constant ? "const" : "variable",
+                    node->var_type,
+                    node->line_number);
+                insert_in_current_scope(symbol_table, node->var_name, 
+                                      node->is_constant, node->var_type, 
+                                      node->line_number);
+                printf("Inserted variable: %s (scope depth: %d)\n", 
+                      node->var_name, symbol_table->top + 1);
             }
-            // Analyze initialization expression if present
-            semantic_analyze(node->init_value);
+            semantic_analyze(node->init_value, symbol_table);
             break;
         }
             
         case NODE_IDENTIFIER: {
-            // Check if variable is declared
-            if (!search_in_all_scopes(node->symbol_table, node->string_value)) {
+            if (!search_in_all_scopes(symbol_table, node->string_value)) {
                 char error_msg[100];
-                snprintf(error_msg, sizeof(error_msg), 
-                         "Use of undeclared variable '%s'", node->string_value);
+                snprintf(error_msg, sizeof(error_msg),
+                        "Undeclared variable '%s' at line %d",
+                        node->string_value, node->line_number);
                 compiler_error(error_msg);
             }
+            break;
+        }
+            
+        case NODE_COMPOUND: {
+            push_scope(symbol_table);
+            printf("Entering new scope (depth: %d)\n", symbol_table->top + 1);
+            
+            for (size_t i = 0; i < node->children_count; i++) {
+                semantic_analyze(node->children[i], symbol_table);
+            }
+            
+            printf("Leaving scope (depth: %d)\n", symbol_table->top + 1);
+            print_trie(symbol_table->scopes[symbol_table->top]); // Print before popping
+            pop_scope(symbol_table);
             break;
         }
             
         case NODE_BINARY_OP:
         case NODE_UNARY_OP:
-            semantic_analyze(node->left);
-            semantic_analyze(node->right);
+            semantic_analyze(node->left, symbol_table);
+            semantic_analyze(node->right, symbol_table);
             break;
             
         case NODE_IF:
-            semantic_analyze(node->cond);
-            semantic_analyze(node->then_part);
-            semantic_analyze(node->else_part);
+            semantic_analyze(node->cond, symbol_table);
+            semantic_analyze(node->then_part, symbol_table);
+            semantic_analyze(node->else_part, symbol_table);
             break;
             
         case NODE_WHILE:
-            semantic_analyze(node->cond);
-            semantic_analyze(node->then_part);
+            semantic_analyze(node->cond, symbol_table);
+            semantic_analyze(node->then_part, symbol_table);
             break;
             
         case NODE_FOR:
-            semantic_analyze(node->init);
-            semantic_analyze(node->cond);
-            semantic_analyze(node->step);
-            semantic_analyze(node->then_part);
+            semantic_analyze(node->init, symbol_table);
+            semantic_analyze(node->cond, symbol_table);
+            semantic_analyze(node->step, symbol_table);
+            semantic_analyze(node->then_part, symbol_table);
             break;
             
-        case NODE_COMPOUND:
-            for (size_t i = 0; i < node->children_count; i++) {
-                semantic_analyze(node->children[i]);
-            }
-            break;
             
         default:
+            // Recursively analyze children
+            semantic_analyze(node->left, symbol_table);
+            semantic_analyze(node->right, symbol_table);
             break;
     }
 }
 
-// In ast.c
 
 static int label_counter = 0;
 
@@ -413,6 +499,148 @@ void generate_assembly(ASTNode *node, FILE *out) {
         }
             
         // Add other node types as needed
+            
+        default:
+            break;
+    }
+}
+
+
+// PRINTING PRINTING PRINTING PRINTING PRINTING
+
+const char* node_type_to_str(NodeType type){
+    static const char* names[] = {
+        "NODE_PROGRAM",
+        "NODE_DECLARATION",
+        "NODE_ASSIGNMENT",
+        "NODE_IDENTIFIER",
+        "NODE_INTEGER",
+        "NODE_FLOAT",
+        "NODE_STRING",
+        "NODE_CHAR",
+        "NODE_BINARY_OP",
+        "NODE_UNARY_OP",
+        "NODE_IF",
+        "NODE_WHILE",
+        "NODE_FOR",
+        "NODE_BREAK",
+        "NODE_RETURN",
+        "NODE_COMPOUND",
+        "NODE_FUNCTION",
+        "NODE_CALL", 
+        "NODE_CONTINUE"
+    };
+
+    if(type >= 0 && type < sizeof(names)/sizeof(names[0])){
+        return names[type];
+    }
+    return "NODE_INVALID";
+}
+const char* operator_to_string(OperatorType op) {
+    static const char* names[] = {
+        [OP_ADD] = "+", 
+        [OP_SUB] = "-", 
+        [OP_MUL] = "*", 
+        [OP_DIV] = "/",
+        [OP_MOD] = "%",
+        [OP_ASSIGN] = "=", 
+        [OP_EQ] = "==", 
+        [OP_NE] = "!=",
+        [OP_LT] = "<", 
+        [OP_LE] = "<=",
+        [OP_GT] = ">", 
+        [OP_GE] = ">=",
+        [OP_AND] = "&&",
+        [OP_OR] = "||",
+        [OP_NOT] = "!",
+        [OP_NEG] = "- (unary)",
+        [OP_PRE_INC] = "++ (prefix)",
+        [OP_PRE_DEC] = "-- (prefix)",
+        [OP_POST_INC] = "++ (postfix)",
+        [OP_POST_DEC] = "-- (postfix)",
+        [OP_PE] = "+=",
+        [OP_ME] = "-=",
+        [OP_MULE] = "*=",
+        [OP_DIVE] = "/=",
+        [OP_MODE] = "%="
+    };
+    return (op >= 0 && op < sizeof(names)/sizeof(names[0])) ? names[op] : "?";
+}
+
+void ast_print(ASTNode *node, int indent) {
+    if (!node) {
+        printf("%*s(null)\n", indent*4, "");
+        return;
+    }
+
+    // Print node header
+    printf("%*s%s @%p (line %d)", indent*4, "", 
+           node_type_to_str(node->type), node, node->line_number);
+
+    // Print node-specific details
+    switch (node->type) {
+        case NODE_IDENTIFIER:
+            printf(" '%s'", node->string_value);
+            break;
+        case NODE_INTEGER:
+            printf(" %lld", node->int_value);
+            break;
+        case NODE_FLOAT:
+            printf(" %f", node->float_value);
+            break;
+        case NODE_STRING:
+            printf(" \"%s\"", node->string_value);
+            break;
+        case NODE_CHAR:
+            printf(" '%c'", node->char_value);
+            break;
+        case NODE_DECLARATION:
+            printf(" %s: type=%d, const=%d", 
+                   node->var_name, node->var_type, node->is_constant);
+            break;
+        case NODE_BINARY_OP:
+            printf(" %s", operator_to_string(node->op));
+            break;
+        case NODE_UNARY_OP:
+            printf(" %s", operator_to_string(node->op));
+            break;
+        case NODE_COMPOUND:
+            printf(" [%zu statements]", node->children_count);
+            break;
+        default:
+            break;
+    }
+    printf("\n");
+
+    // Print children
+    switch (node->type) {
+        case NODE_BINARY_OP:
+        case NODE_UNARY_OP:
+        case NODE_IF:
+        case NODE_WHILE:
+        case NODE_FOR:
+        case NODE_RETURN:
+            ast_print(node->left, indent+1);
+            ast_print(node->right, indent+1);
+            if (node->type == NODE_IF) ast_print(node->else_part, indent+1);
+            if (node->type == NODE_FOR) ast_print(node->step, indent+1);
+            break;
+            
+        case NODE_COMPOUND:
+            for (size_t i = 0; i < node->children_count; i++) {
+                ast_print(node->children[i], indent+1);
+            }
+            break;
+            
+        case NODE_DECLARATION:
+            ast_print(node->init_value, indent+1);
+            break;
+        case NODE_PROGRAM:
+            for (size_t i = 0; i < node->children_count; i++) {
+                ast_print(node->children[i], indent+1);
+            }
+            break;
+
             
         default:
             break;

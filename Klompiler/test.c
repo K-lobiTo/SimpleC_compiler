@@ -9,7 +9,7 @@ int main() {
     int y = -test;
     int z = -(-5);
     int x = 0;
-    for(int i = 1; i < 3; i++){
+    for(int falla = 1; falla < 3; falla++){
         x = x+=2;
         if(x){break;}
     }

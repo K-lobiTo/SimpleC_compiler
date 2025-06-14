@@ -2,6 +2,7 @@
 #include <assert.h>
 #include "trie.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -96,4 +97,48 @@ void trie_free(TrieNode *root) {
         }
     }
     free(root);
+}
+
+// Helper function for recursive printing
+static void print_trie_helper(TrieNode *node, char *buffer, int depth) {
+    if (node == NULL){
+        printf("it was null\n");
+        return;
+    }
+
+    // If this node marks the end of a word, print it
+    if (node->is_end_of_word) {
+        buffer[depth] = '\0';
+        printf("Variable: %s (Line: %d, Type: %d, Constant: %s)\n", 
+               buffer, node->line, node->type, 
+               node->is_constant ? "yes" : "no");
+    }
+
+    // Recursively print all children
+    for (int i = 0; i < TRIE_CHAR_SET_SIZE; i++) {
+        if (node->children[i]) {
+            // Determine the character for this index
+            char c;
+            if (i < 26) c = 'a' + i;               // a-z
+            else if (i < 52) c = 'A' + (i - 26);   // A-Z
+            else if (i < 62) c = '0' + (i - 52);   // 0-9
+            else c = '_';                          // underscore
+
+            buffer[depth] = c;
+            print_trie_helper(node->children[i], buffer, depth + 1);
+        }
+    }
+}
+
+// Main function to print the trie
+void print_trie(TrieNode *root) {
+    if (root == NULL) {
+        printf("(Empty scope)\n");
+        return;
+    }
+
+    printf("---- Scope Contents ----\n");
+    char buffer[256];  // Adjust size as needed for max variable name length
+    print_trie_helper(root, buffer, 0);
+    printf("------------------------\n");
 }

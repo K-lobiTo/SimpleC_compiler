@@ -70,21 +70,21 @@ program:
     program_start
     global_declarations MAINFUN LPAREN RPAREN compound_statement
     {
-        program_root = ast_new_program(symbol_table);
-        if (program_root && $6) {
-            $$ = ast_add_statement(program_root, $6);
-        } else {
-            $$ = NULL;
-            yyerror("Failed to create program AST");
-        }
+        ast_add_statement(program_root, $2);
+        ast_add_statement(program_root, $6);
+        $$ = program_root;
     }
     ;
 
 program_start:
-    {
-        // Initialize symbol table
+    {   // Initialization of the symbol table here 
         symbol_table = create_scope_stack(10);
         push_scope(symbol_table);
+        program_root = ast_new_program(symbol_table);
+        if (!program_root) {
+            printf("Failed to create program node\n");
+            YYABORT;
+        }
         $$ = ast_new_compound_statement(yylineno);
     }
 
@@ -96,23 +96,26 @@ global_declarations:
 declaration:
     declaration_prefix type_specifier IDENTIFIER SEMICOLON {
         $$ = ast_new_declaration($3, $2, NULL, yylineno);
+        $$->is_constant = ($1 != NULL); 
         free($3);
     }
     | declaration_prefix type_specifier IDENTIFIER ASSIGN expression SEMICOLON {
         $$ = ast_new_declaration($3, $2, $5, yylineno);
+        $$->is_constant = ($1 != NULL); 
         free($3);
     }
     | declaration_prefix STR IDENTIFIER ASSIGN expression SEMICOLON {
         $$ = ast_new_declaration($3, TYPE_STR, $5, yylineno);
+        $$->is_constant = ($1 != NULL); 
         free($3);
     }
     ;
 
 declaration_prefix:
-    CONST { $$ = NULL; }
+    CONST { $$ = (ASTNode*)1; } 
     | UNSIGNED { $$ = NULL; }
-    | UNSIGNED CONST { $$ = NULL; }
-    | CONST UNSIGNED { $$ = NULL; }
+    | UNSIGNED CONST { $$ = (ASTNode*)1; }
+    | CONST UNSIGNED { $$ = (ASTNode*)1; }
     | { $$ = NULL; }
     ;
 
@@ -141,21 +144,31 @@ expression_statement:
     ;
 
 compound_statement:
-    LBRACE {  push_scope(symbol_table);
-        current_compound = ast_new_compound_statement(yylineno);}
-    statement_list RBRACE { 
+    LBRACE {
+        current_compound = ast_new_compound_statement(yylineno);
+        if (!current_compound) {
+            yyerror("Failed to create compound statement");
+            YYABORT;
+        }
+    }
+    statement_list RBRACE {
         $$ = current_compound;
-        pop_scope(symbol_table);}
+     }
     ;
 
 statement_list:
-    statement_list statement { 
-        if (!$1 || !$2) {
-            yyerror("Null statement in statement list");
-            YYABORT;
+    statement_list statement {
+        if (!$1) {
+            // First statement - create new compound
+            $$ = ast_new_compound_statement(yylineno);
+        } else {
+            $$ = $1;
         }
-        $$ = ast_add_statement($1, $2); }
-    | /* empty */ { $$ = ast_new_compound_statement(yylineno); }
+        ast_add_statement($$, $2);
+    }
+    | /* empty */ {
+        $$ = NULL;  // Explicit empty list
+    }
     ;
 
 selection_statement:

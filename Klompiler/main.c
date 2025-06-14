@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "compiler.h"
-// #include "trie.h"
-#include "stack_of_tries.h"
+#include "ast.h"
 
 extern FILE *yyin;
 extern int yyparse();
 extern int yylineno;
-// extern ASTNode *program_root;
+extern ASTNode *program_root;
+extern ScopeStack *symbol_table;
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -31,12 +31,16 @@ int main(int argc, char *argv[]) {
     }
 
     printf("Parsing completed successfully!\n");
+
+    // Semantic analysis
+    ast_print(program_root, 0);
+    // semantic_analyze(program_root, symbol_table);
     
-    // Future AST processing functions here
     
     // Cleanup
     fclose(yyin);
-    // free_ast(program_root);
+    ast_free(program_root);
+    free_scope_stack(&symbol_table);
     
     return 0;
 }

@@ -101,6 +101,7 @@ typedef struct ASTNode {
         struct {
             char *var_name;
             int var_type;  // You can define an enum for types
+            bool is_constant;
             struct ASTNode *init_value;
         };
         
@@ -133,7 +134,8 @@ ASTNode *ast_new_return(ASTNode* expr, int line);
 void ast_free(ASTNode *node);
 
 // Semantic analysis
-void semantic_analyze(ASTNode *node);
+void semantic_analyze(ASTNode *node, ScopeStack *symbol_table);
+void ast_print(ASTNode *node, int indent);
 
 // Code generation
 void generate_assembly(ASTNode *node, FILE *out);

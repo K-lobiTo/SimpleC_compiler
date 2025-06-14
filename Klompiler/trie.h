@@ -24,4 +24,7 @@ bool trie_search(TrieNode *root, const char *key);
 void trie_free(TrieNode *root);
 int char_to_index(char c);
 
+// Printing
+void print_trie(TrieNode *root);
+
 #endif

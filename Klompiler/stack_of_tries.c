@@ -22,6 +22,10 @@ void push_scope(ScopeStack *stack) {
 
 void pop_scope(ScopeStack *stack) {
     if (!stack || stack->top < 0) return;
+
+    printf("\nPopping scope (depth: %d):\n", stack->top + 1);
+    print_trie(stack->scopes[stack->top]);
+
     trie_free(stack->scopes[stack->top--]);  // Free the topmost scope
 
     // printf("stack->top :%d\n",stack->top);
@@ -69,3 +73,5 @@ bool search_in_current_scope(const ScopeStack *stack, const char *symbol) {
 bool search_in_global_scope(const ScopeStack *stack, const char *symbol) {
     return (stack->top >= 0) && trie_search(stack->scopes[0], symbol);
 }
+
+
