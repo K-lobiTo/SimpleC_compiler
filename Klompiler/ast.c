@@ -284,14 +284,20 @@ void ast_free(ASTNode *node) {
 
 
 void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
-    if (!node) return;
+    if (!node){
+        printf("No node in SemAnalyze\n");
+        return;
+    }
     assert(symbol_table);
     
     // Set symbol table reference for all nodes
     node->symbol_table = symbol_table;
     
-    assert(node->type);
-    printf("NodeType : %d, NodeLineNo: %d", node->type, node->line_number);
+    if(node->type<NODE_PROGRAM || node->type>NODE_CONTINUE){
+        printf("No node type in SemAnalyze \n");
+        return;
+    }
+    printf("NodeType : %d, NodeLineNo: %d\n", node->type, node->line_number);
     if (node->type < NODE_PROGRAM || node->type > NODE_CONTINUE) {
         fprintf(stderr, "Error: Invalid node type %d at line %d\n", node->type, node->line_number);
         abort();
@@ -336,6 +342,18 @@ void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
         case NODE_COMPOUND: {
             push_scope(symbol_table);
             printf("Entering new scope (depth: %d)\n", symbol_table->top + 1);
+            
+            for (size_t i = 0; i < node->children_count; i++) {
+                semantic_analyze(node->children[i], symbol_table);
+            }
+            
+            printf("Leaving scope (depth: %d)\n", symbol_table->top + 1);
+            print_trie(symbol_table->scopes[symbol_table->top]); // Print before popping
+            pop_scope(symbol_table);
+            break;
+        }
+        case NODE_PROGRAM: {
+            printf("In Program entering new scope (depth: %d)\n", symbol_table->top + 1);
             
             for (size_t i = 0; i < node->children_count; i++) {
                 semantic_analyze(node->children[i], symbol_table);
@@ -568,6 +586,12 @@ const char* operator_to_string(OperatorType op) {
 }
 
 void ast_print(ASTNode *node, int indent) {
+    // Safety check for infinite recursion
+    if (indent > 20) {
+        printf("%*sMAX DEPTH REACHED\n", indent*4, "");
+        return;
+    }
+
     if (!node) {
         printf("%*s(null)\n", indent*4, "");
         return;
@@ -607,42 +631,106 @@ void ast_print(ASTNode *node, int indent) {
         case NODE_COMPOUND:
             printf(" [%zu statements]", node->children_count);
             break;
+        case NODE_IF:
+            printf(" if");
+            break;
+        case NODE_WHILE:
+            printf(" while");
+            break;
+        case NODE_FOR:
+            printf(" for");
+            break;
+        case NODE_RETURN:
+            printf(" return");
+            break;
+        case NODE_PROGRAM:
+            printf(" program");
+            break;
+        case NODE_CONTINUE:
+            printf(" continue");
+            break;
+        case NODE_BREAK:
+            printf(" break");
+            break;
         default:
+            printf(" [unknown node type %d]", node->type);
             break;
     }
     printf("\n");
 
-    // Print children
+    // Print children with clear relationship indicators
     switch (node->type) {
         case NODE_BINARY_OP:
+            printf("%*sleft:\n", (indent+1)*4, "");
+            ast_print(node->left, indent+2);
+            printf("%*sright:\n", (indent+1)*4, "");
+            ast_print(node->right, indent+2);
+            break;
+
         case NODE_UNARY_OP:
+            printf("%*soperand:\n", (indent+1)*4, "");
+            ast_print(node->left, indent+2);
+            break;
+
         case NODE_IF:
-        case NODE_WHILE:
-        case NODE_FOR:
-        case NODE_RETURN:
-            ast_print(node->left, indent+1);
-            ast_print(node->right, indent+1);
-            if (node->type == NODE_IF) ast_print(node->else_part, indent+1);
-            if (node->type == NODE_FOR) ast_print(node->step, indent+1);
-            break;
-            
-        case NODE_COMPOUND:
-            for (size_t i = 0; i < node->children_count; i++) {
-                ast_print(node->children[i], indent+1);
-            }
-            break;
-            
-        case NODE_DECLARATION:
-            ast_print(node->init_value, indent+1);
-            break;
-        case NODE_PROGRAM:
-            for (size_t i = 0; i < node->children_count; i++) {
-                ast_print(node->children[i], indent+1);
+            printf("%*scondition:\n", (indent+1)*4, "");
+            ast_print(node->cond, indent+2);
+            printf("%*sthen:\n", (indent+1)*4, "");
+            ast_print(node->then_part, indent+2);
+            if (node->else_part) {
+                printf("%*selse:\n", (indent+1)*4, "");
+                ast_print(node->else_part, indent+2);
             }
             break;
 
-            
+        case NODE_WHILE:
+            printf("%*scondition:\n", (indent+1)*4, "");
+            ast_print(node->cond, indent+2);
+            printf("%*sbody:\n", (indent+1)*4, "");
+            ast_print(node->then_part, indent+2);
+            break;
+
+        case NODE_FOR:
+            printf("%*sinit:\n", (indent+1)*4, "");
+            ast_print(node->init, indent+2);
+            printf("%*scondition:\n", (indent+1)*4, "");
+            ast_print(node->cond, indent+2);
+            printf("%*sstep:\n", (indent+1)*4, "");
+            ast_print(node->step, indent+2);
+            printf("%*sbody:\n", (indent+1)*4, "");
+            ast_print(node->then_part, indent+2);
+            break;
+
+        case NODE_RETURN:
+            if (node->left) {
+                printf("%*sexpression:\n", (indent+1)*4, "");
+                ast_print(node->left, indent+2);
+            }
+            break;
+
+        case NODE_COMPOUND:
+            for (size_t i = 0; i < node->children_count; i++) {
+                printf("%*s[%zu]:\n", (indent+1)*4, "", i);
+                ast_print(node->children[i], indent+2);
+            }
+            break;
+
+        case NODE_DECLARATION:
+            if (node->init_value) {
+                printf("%*sinitializer:\n", (indent+1)*4, "");
+                ast_print(node->init_value, indent+2);
+            }
+            break;
+
+        case NODE_PROGRAM:
+            for (size_t i = 0; i < node->children_count; i++) {
+                printf("%*s[%zu]:\n", (indent+1)*4, "", i);
+                ast_print(node->children[i], indent+2);
+            }
+            break;
+
         default:
+            // No children to print for other node types
             break;
     }
 }

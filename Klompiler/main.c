@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 
     // Semantic analysis
     ast_print(program_root, 0);
-    // semantic_analyze(program_root, symbol_table);
+    semantic_analyze(program_root, symbol_table);
     
     
     // Cleanup

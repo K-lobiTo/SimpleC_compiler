@@ -145,14 +145,16 @@ expression_statement:
 
 compound_statement:
     LBRACE {
-        current_compound = ast_new_compound_statement(yylineno);
-        if (!current_compound) {
-            yyerror("Failed to create compound statement");
-            YYABORT;
-        }
+        // current_compound = ast_new_compound_statement(yylineno);
+        // if (!current_compound) {
+        //     yyerror("Failed to create compound statement");
+        //     YYABORT;
+        // }
     }
     statement_list RBRACE {
-        $$ = current_compound;
+        // ast_add_statement(current_compound, $3);
+        // $$ = current_compound;
+        $$ = $3;
      }
     ;
 
