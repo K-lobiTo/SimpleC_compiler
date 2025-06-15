@@ -100,7 +100,7 @@ typedef struct ASTNode {
         // For declarations
         struct {
             char *var_name;
-            int var_type;  // You can define an enum for types
+            int var_type;
             bool is_constant;
             struct ASTNode *init_value;
         };

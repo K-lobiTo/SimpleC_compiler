@@ -7,6 +7,7 @@
 #include "compiler.h"
 
 
+const char* node_type_to_str(NodeType type);
 
 ASTNode *ast_new_program(ScopeStack *symbol_table) {
     ASTNode *node = calloc(1, sizeof(ASTNode));
@@ -50,6 +51,8 @@ ASTNode *ast_new_integer(long long value, int line) {
     node->type = NODE_INTEGER;
     node->line_number = line;
     node->int_value = value;
+    node->left = NULL;
+    node->right = NULL;
     return node;
 }
 
@@ -285,7 +288,7 @@ void ast_free(ASTNode *node) {
 
 void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
     if (!node){
-        printf("No node in SemAnalyze\n");
+        // printf("No node in SemAnalyze\n");
         return;
     }
     assert(symbol_table);
@@ -294,10 +297,10 @@ void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
     node->symbol_table = symbol_table;
     
     if(node->type<NODE_PROGRAM || node->type>NODE_CONTINUE){
-        printf("No node type in SemAnalyze \n");
+        // printf("No node type in SemAnalyze \n");
         return;
     }
-    printf("NodeType : %d, NodeLineNo: %d\n", node->type, node->line_number);
+    // printf("NodeType : %s, NodeLineNo: %d\n", node_type_to_str(node->type), node->line_number);
     if (node->type < NODE_PROGRAM || node->type > NODE_CONTINUE) {
         fprintf(stderr, "Error: Invalid node type %d at line %d\n", node->type, node->line_number);
         abort();
@@ -313,18 +316,18 @@ void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
                 compiler_error(error_msg);
             } else {
                 // Insert into symbol table
-                printf("Declaring %s as %s (type: %d, line: %d)\n",
-                    node->var_name,
-                    node->is_constant ? "const" : "variable",
-                    node->var_type,
-                    node->line_number);
+                // printf("Declaring %s as %s (type: %d, line: %d)\n",
+                //     node->var_name,
+                //     node->is_constant ? "const" : "variable",
+                //     node->var_type,
+                //     node->line_number);
                 insert_in_current_scope(symbol_table, node->var_name, 
                                       node->is_constant, node->var_type, 
                                       node->line_number);
-                printf("Inserted variable: %s (scope depth: %d)\n", 
-                      node->var_name, symbol_table->top + 1);
+                // printf("Inserted variable: %s (scope depth: %d)\n", 
+                //       node->var_name, symbol_table->top + 1);
             }
-            semantic_analyze(node->init_value, symbol_table);
+            if(node->init_value)semantic_analyze(node->init_value, symbol_table);
             break;
         }
             
@@ -346,22 +349,24 @@ void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
             for (size_t i = 0; i < node->children_count; i++) {
                 semantic_analyze(node->children[i], symbol_table);
             }
-            
+            if(symbol_table->top==0)break; // keeping global until the end of the program
             printf("Leaving scope (depth: %d)\n", symbol_table->top + 1);
             print_trie(symbol_table->scopes[symbol_table->top]); // Print before popping
             pop_scope(symbol_table);
             break;
         }
         case NODE_PROGRAM: {
-            printf("In Program entering new scope (depth: %d)\n", symbol_table->top + 1);
+            printf("Entering program Initialization (depth: %d)\n", symbol_table->top + 1);
             
             for (size_t i = 0; i < node->children_count; i++) {
                 semantic_analyze(node->children[i], symbol_table);
             }
+            if(symbol_table->top==0){
+                printf("Leaving scope (depth: %d)\n", symbol_table->top + 1);
+                print_trie(symbol_table->scopes[symbol_table->top]); // printing global scope
+                pop_scope(symbol_table); //poping global scope
+            }
             
-            printf("Leaving scope (depth: %d)\n", symbol_table->top + 1);
-            print_trie(symbol_table->scopes[symbol_table->top]); // Print before popping
-            pop_scope(symbol_table);
             break;
         }
             
@@ -392,8 +397,8 @@ void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
             
         default:
             // Recursively analyze children
-            semantic_analyze(node->left, symbol_table);
-            semantic_analyze(node->right, symbol_table);
+            if(node->left)semantic_analyze(node->left, symbol_table);
+            if(node->left)semantic_analyze(node->right, symbol_table);
             break;
     }
 }

@@ -79,7 +79,6 @@ program:
 program_start:
     {   // Initialization of the symbol table here 
         symbol_table = create_scope_stack(10);
-        push_scope(symbol_table);
         program_root = ast_new_program(symbol_table);
         if (!program_root) {
             printf("Failed to create program node\n");
