@@ -14,7 +14,7 @@ extern int yychar;
 
 DIGIT    [0-9]
 INTEGER  [-+]?{DIGIT}+
-FLOAT    [-+]?([0-9]*\.[0-9]+|[0-9]+\.)([eE][-+]?[0-9]+)?  
+FLOATNUM    [-+]?([0-9]*\.[0-9]+|[0-9]+\.)([eE][-+]?[0-9]+)?  
 LETTER   [a-zA-Z_]
 ID       {LETTER}({LETTER}|{DIGIT})*
 STRING   \"([^"\\]|\\.)*\"
@@ -45,6 +45,7 @@ WS       [ \t\n]
                 yylval.string = strdup("char*");
                 return STR;}
 "char"      { return CHAR; }
+"float"      { return FLOAT; }
 "long"      { return LONG; }
 "long"{WS}+"long"      { return LONGLONG; }
 "double"      { return DOUBLE; }
@@ -84,7 +85,7 @@ WS       [ \t\n]
 
 {ID}          { yylval.string = strdup(yytext); return IDENTIFIER; }
 {INTEGER}     { yylval.number = atoll(yytext); return INTEGER; }
-{FLOAT}       { yylval.float_val = atof(yytext); return FLOAT_LITERAL; }
+{FLOATNUM}       { yylval.float_val = atof(yytext); return FLOAT_LITERAL; }
 {WS}       ;
 .       {
     char error_msg[50];

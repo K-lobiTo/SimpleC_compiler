@@ -11,7 +11,11 @@ int main() {
     int x = 0;
     for(int falla = 1; falla < 3; falla++){
         x = x+=2;
-        if(x){break;}
+        float declaredfloat = 1.2;
+        if(x){
+            int declaredinIF; 
+            break;
+        }
     }
     for(; ;){
         x = x+=2;

@@ -404,129 +404,6 @@ void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
 }
 
 
-static int label_counter = 0;
-
-void generate_assembly(ASTNode *node, FILE *out) {
-    if (!node) return;
-    
-    switch (node->type) {
-        case NODE_PROGRAM:
-            fprintf(out, ".globl main\n");
-            fprintf(out, "main:\n");
-            fprintf(out, "  push %%ebp\n");
-            fprintf(out, "  mov %%esp, %%ebp\n");
-            
-            // Generate code for all statements
-            for (size_t i = 0; i < node->children_count; i++) {
-                generate_assembly(node->children[i], out);
-            }
-            
-            fprintf(out, "  mov $0, %%eax\n");  // Return 0
-            fprintf(out, "  leave\n");
-            fprintf(out, "  ret\n");
-            break;
-            
-        case NODE_DECLARATION:
-            // Allocate space on stack
-            fprintf(out, "  sub $8, %%esp  # Allocate space for %s\n", node->var_name);
-            
-            // If there's an initializer
-            if (node->init_value) {
-                generate_assembly(node->init_value, out);
-                fprintf(out, "  mov %%eax, -%d(%%ebp)  # Store %s\n", 
-                        (node->symbol_table->top + 1) * 8, node->var_name);
-            }
-            break;
-            
-        case NODE_IDENTIFIER:
-            // Load variable from stack
-            fprintf(out, "  mov -%d(%%ebp), %%eax  # Load %s\n", 
-                    (node->symbol_table->top + 1) * 8, node->string_value);
-            break;
-            
-        case NODE_INTEGER:
-            fprintf(out, "  mov $%lld, %%eax\n", node->int_value);
-            break;
-            
-        case NODE_FLOAT:
-            // For simplicity, we'll treat it as integer here
-            fprintf(out, "  mov $%d, %%eax\n", (int)node->float_value);
-            break;
-            
-        case NODE_BINARY_OP: {
-            generate_assembly(node->right, out);
-            fprintf(out, "  push %%eax\n");
-            generate_assembly(node->left, out);
-            fprintf(out, "  pop %%ecx\n");
-            
-            switch (node->op) {
-                case OP_ADD:
-                    fprintf(out, "  add %%ecx, %%eax\n");
-                    break;
-                case OP_SUB:
-                    fprintf(out, "  sub %%ecx, %%eax\n");
-                    break;
-                case OP_MUL:
-                    fprintf(out, "  imul %%ecx, %%eax\n");
-                    break;
-                case OP_DIV:
-                    fprintf(out, "  cdq\n");
-                    fprintf(out, "  idiv %%ecx\n");
-                    break;
-                case OP_ASSIGN:
-                    fprintf(out, "  mov %%eax, -%d(%%ebp)  # Store to %s\n", 
-                            (node->left->symbol_table->top + 1) * 8, 
-                            node->left->string_value);
-                    break;
-                // Add other operations as needed
-                default:
-                    break;
-            }
-            break;
-        }
-            
-        case NODE_IF: {
-            int else_label = label_counter++;
-            int end_label = label_counter++;
-            
-            generate_assembly(node->cond, out);
-            fprintf(out, "  cmp $0, %%eax\n");
-            fprintf(out, "  je L%d\n", else_label);
-            
-            generate_assembly(node->then_part, out);
-            fprintf(out, "  jmp L%d\n", end_label);
-            
-            fprintf(out, "L%d:\n", else_label);
-            if (node->else_part) {
-                generate_assembly(node->else_part, out);
-            }
-            
-            fprintf(out, "L%d:\n", end_label);
-            break;
-        }
-            
-        case NODE_WHILE: {
-            int start_label = label_counter++;
-            int end_label = label_counter++;
-            
-            fprintf(out, "L%d:\n", start_label);
-            generate_assembly(node->cond, out);
-            fprintf(out, "  cmp $0, %%eax\n");
-            fprintf(out, "  je L%d\n", end_label);
-            
-            generate_assembly(node->then_part, out);
-            fprintf(out, "  jmp L%d\n", start_label);
-            
-            fprintf(out, "L%d:\n", end_label);
-            break;
-        }
-            
-        // Add other node types as needed
-            
-        default:
-            break;
-    }
-}
 
 
 // PRINTING PRINTING PRINTING PRINTING PRINTING
@@ -736,6 +613,133 @@ void ast_print(ASTNode *node, int indent) {
 
         default:
             // No children to print for other node types
+            break;
+    }
+}
+
+
+
+
+static int label_counter = 0;
+
+void generate_assembly(ASTNode *node, FILE *out) {
+    if (!node) return;
+    
+    switch (node->type) {
+        case NODE_PROGRAM:
+            fprintf(out, ".globl main\n");
+            fprintf(out, "main:\n");
+            fprintf(out, "  push %%ebp\n");
+            fprintf(out, "  mov %%esp, %%ebp\n");
+            
+            // Generate code for all statements
+            for (size_t i = 0; i < node->children_count; i++) {
+                generate_assembly(node->children[i], out);
+            }
+            
+            fprintf(out, "  mov $0, %%eax\n");  // Return 0
+            fprintf(out, "  leave\n");
+            fprintf(out, "  ret\n");
+            break;
+            
+        case NODE_DECLARATION:
+            // Allocate space on stack
+            fprintf(out, "  sub $8, %%esp  # Allocate space for %s\n", node->var_name);
+            
+            // If there's an initializer
+            if (node->init_value) {
+                generate_assembly(node->init_value, out);
+                fprintf(out, "  mov %%eax, -%d(%%ebp)  # Store %s\n", 
+                        (node->symbol_table->top + 1) * 8, node->var_name);
+            }
+            break;
+            
+        case NODE_IDENTIFIER:
+            // Load variable from stack
+            fprintf(out, "  mov -%d(%%ebp), %%eax  # Load %s\n", 
+                    (node->symbol_table->top + 1) * 8, node->string_value);
+            break;
+            
+        case NODE_INTEGER:
+            fprintf(out, "  mov $%lld, %%eax\n", node->int_value);
+            break;
+            
+        case NODE_FLOAT:
+            // For simplicity, we'll treat it as integer here
+            fprintf(out, "  mov $%d, %%eax\n", (int)node->float_value);
+            break;
+            
+        case NODE_BINARY_OP: {
+            generate_assembly(node->right, out);
+            fprintf(out, "  push %%eax\n");
+            generate_assembly(node->left, out);
+            fprintf(out, "  pop %%ecx\n");
+            
+            switch (node->op) {
+                case OP_ADD:
+                    fprintf(out, "  add %%ecx, %%eax\n");
+                    break;
+                case OP_SUB:
+                    fprintf(out, "  sub %%ecx, %%eax\n");
+                    break;
+                case OP_MUL:
+                    fprintf(out, "  imul %%ecx, %%eax\n");
+                    break;
+                case OP_DIV:
+                    fprintf(out, "  cdq\n");
+                    fprintf(out, "  idiv %%ecx\n");
+                    break;
+                case OP_ASSIGN:
+                    fprintf(out, "  mov %%eax, -%d(%%ebp)  # Store to %s\n", 
+                            (node->left->symbol_table->top + 1) * 8, 
+                            node->left->string_value);
+                    break;
+                // Add other operations as needed
+                default:
+                    break;
+            }
+            break;
+        }
+            
+        case NODE_IF: {
+            int else_label = label_counter++;
+            int end_label = label_counter++;
+            
+            generate_assembly(node->cond, out);
+            fprintf(out, "  cmp $0, %%eax\n");
+            fprintf(out, "  je L%d\n", else_label);
+            
+            generate_assembly(node->then_part, out);
+            fprintf(out, "  jmp L%d\n", end_label);
+            
+            fprintf(out, "L%d:\n", else_label);
+            if (node->else_part) {
+                generate_assembly(node->else_part, out);
+            }
+            
+            fprintf(out, "L%d:\n", end_label);
+            break;
+        }
+            
+        case NODE_WHILE: {
+            int start_label = label_counter++;
+            int end_label = label_counter++;
+            
+            fprintf(out, "L%d:\n", start_label);
+            generate_assembly(node->cond, out);
+            fprintf(out, "  cmp $0, %%eax\n");
+            fprintf(out, "  je L%d\n", end_label);
+            
+            generate_assembly(node->then_part, out);
+            fprintf(out, "  jmp L%d\n", start_label);
+            
+            fprintf(out, "L%d:\n", end_label);
+            break;
+        }
+            
+        // Add other node types as needed
+            
+        default:
             break;
     }
 }

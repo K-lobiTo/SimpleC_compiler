@@ -187,6 +187,7 @@ iteration_statement:
     }
     | FOR LPAREN for_init expression_opt SEMICOLON expression_opt RPAREN compound_statement {
         $$ = ast_new_for($3, $4, $6, $8, yylineno);
+        ast_add_statement($8, $3);
     }
     ;
 
