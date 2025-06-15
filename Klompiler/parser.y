@@ -74,6 +74,11 @@ program:
         ast_add_statement(program_root, $6);
         $$ = program_root;
     }
+    | program_start global_declarations 
+    {
+        ast_add_statement(program_root, $2);
+        $$ = program_root;
+    }
     ;
 
 program_start:
@@ -135,6 +140,11 @@ statement:
     | selection_statement { $$ = $1; }
     | iteration_statement { $$ = $1; }
     | jump_statement { $$ = $1; }
+    | error SEMICOLON {
+        yyerrok;
+        fprintf(stderr, "Error recovered at line %d\n", yylineno);
+        $$ = NULL;
+    }
     ;
 
 expression_statement:
@@ -143,17 +153,8 @@ expression_statement:
     ;
 
 compound_statement:
-    LBRACE {
-        // current_compound = ast_new_compound_statement(yylineno);
-        // if (!current_compound) {
-        //     yyerror("Failed to create compound statement");
-        //     YYABORT;
-        // }
-    }
-    statement_list RBRACE {
-        // ast_add_statement(current_compound, $3);
-        // $$ = current_compound;
-        $$ = $3;
+    LBRACE statement_list RBRACE {
+        $$ = $2;
      }
     ;
 

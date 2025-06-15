@@ -17,6 +17,7 @@ int main(int argc, char *argv[]) {
 
     // Open the input file
     FILE* input = fopen(argv[1], "r");
+    FILE* output = fopen("output.asm", "w");
     if (!input) {
         perror("Error opening input file");
         return 1;
@@ -30,11 +31,18 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    printf("Parsing completed successfully!\n");
+    printf("Parsing completed successfully!\n\n");
 
     // Semantic analysis
+    printf("AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST\n");
     ast_print(program_root, 0);
+    printf("AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST\n\n");
+
+    printf("Semantic Analysis\n");
     semantic_analyze(program_root, symbol_table);
+    printf("End semantic Analysis\n");
+
+    generate_assembly(program_root, output);
     
     
     // Cleanup
