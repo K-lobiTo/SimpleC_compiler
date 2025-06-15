@@ -1,6 +1,7 @@
 //trie.c
 #include <assert.h>
 #include "trie.h"
+#include "ast.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -109,9 +110,11 @@ static void print_trie_helper(TrieNode *node, char *buffer, int depth) {
     // If this node marks the end of a word, print it
     if (node->is_end_of_word) {
         buffer[depth] = '\0';
-        printf("Variable: %s (Line: %d, Type: %d, Constant: %s)\n", 
-               buffer, node->line, node->type, 
-               node->is_constant ? "yes" : "no");
+        printf("%-15s line:%-5d type:%-12s %-9s\n", 
+        buffer, 
+        node->line, 
+        var_type_to_str(node->type),
+        node->is_constant ? "constant" : "variable");
     }
 
     // Recursively print all children
@@ -133,12 +136,12 @@ static void print_trie_helper(TrieNode *node, char *buffer, int depth) {
 // Main function to print the trie
 void print_trie(TrieNode *root) {
     if (root == NULL) {
-        printf("(Empty scope)\n");
+        printf("(Empty scope)\n\n");
         return;
     }
 
-    printf("---- Scope Contents ----\n");
+    printf("---------------- Scope Contents ----------------\n");
     char buffer[256];  // Adjust size as needed for max variable name length
     print_trie_helper(root, buffer, 0);
-    printf("------------------------\n");
+    printf("------------------------------------------------\n\n");
 }

@@ -1,32 +1,11 @@
-int global_var = 2;
-int it_works = 1;
-int test = -1;
-char* st = "str";
-const unsigned char* si = "ss";
-
+long long global;
 int main() {
-    if(-10 < 0){}
-    int y = -test;
-    int z = -(-5);
-    int x = 0;
-    for(int falla = 1; falla < 3; falla++){
-        x = x+=2;
-        float declaredfloat = 1.2;
-        if(x){
-            int declaredinIF; 
-            break;
+    for(int x = 1; x < 3; x++){
+        x += 23;
+        unsigned int a = 9;
+        float f = 1.2;
+        for(int j = 2; j<10; ++j){
+            a+=j;
         }
-    }
-    for(; ;){
-        x = x+=2;
-        if(x){break;}
-    }
-    while(x--){
-        for(int j = 0; j<10; ++j){
-            j+=2;
-            continue;
-        }
-    }
-    if (x){
     }
 }

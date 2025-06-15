@@ -286,6 +286,8 @@ void ast_free(ASTNode *node) {
 }
 
 
+int scope_depth = -1;
+
 void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
     if (!node){
         // printf("No node in SemAnalyze\n");
@@ -344,25 +346,25 @@ void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
             
         case NODE_COMPOUND: {
             push_scope(symbol_table);
-            printf("Entering new scope (depth: %d)\n", symbol_table->top + 1);
+            printf("Entering new scope (depth: %d)\n", ++scope_depth);
             
             for (size_t i = 0; i < node->children_count; i++) {
                 semantic_analyze(node->children[i], symbol_table);
             }
             if(symbol_table->top==0)break; // keeping global until the end of the program
-            printf("Leaving scope (depth: %d)\n", symbol_table->top + 1);
+            printf("Leaving scope (depth: %d)\n", scope_depth--);
             print_trie(symbol_table->scopes[symbol_table->top]); // Print before popping
             pop_scope(symbol_table);
             break;
         }
         case NODE_PROGRAM: {
-            printf("Entering program Initialization (depth: %d)\n", symbol_table->top + 1);
+            printf("Entering program Initialization (depth: %d)\n", 0);
             
             for (size_t i = 0; i < node->children_count; i++) {
                 semantic_analyze(node->children[i], symbol_table);
             }
             if(symbol_table->top==0){
-                printf("Leaving scope (depth: %d)\n", symbol_table->top + 1);
+                printf("Leaving global scope (depth: %d)\n", scope_depth--);
                 print_trie(symbol_table->scopes[symbol_table->top]); // printing global scope
                 pop_scope(symbol_table); //poping global scope
             }
@@ -388,10 +390,15 @@ void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
             break;
             
         case NODE_FOR:
+            push_scope(symbol_table);
+            // printf("Entering FOR scope (depth: %d)\n", symbol_table->top + 1);
             semantic_analyze(node->init, symbol_table);
             semantic_analyze(node->cond, symbol_table);
             semantic_analyze(node->step, symbol_table);
             semantic_analyze(node->then_part, symbol_table);
+            // printf("Leaving FOR (depth: %d)\n", symbol_table->top + 1);
+            // print_trie(symbol_table->scopes[symbol_table->top]);
+            pop_scope(symbol_table);
             break;
             
             
@@ -407,6 +414,24 @@ void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
 
 
 // PRINTING PRINTING PRINTING PRINTING PRINTING
+const char* var_type_to_str(VarType type) {
+    static const char* names[] = {
+        [TYPE_INT] = "int",
+        [TYPE_LONG] = "long",
+        [TYPE_LONGLONG] = "long long",
+        [TYPE_FLOAT] = "float",
+        [TYPE_DOUBLE] = "double",
+        [TYPE_LONGDOUBLE] = "long double",
+        [TYPE_CHAR] = "char",
+        [TYPE_STR] = "char*"
+    };
+
+    // Handle invalid type values gracefully
+    if (type >= 0 && type < sizeof(names)/sizeof(names[0])) {
+        return names[type];
+    }
+    return "unknown_type";
+}
 
 const char* node_type_to_str(NodeType type){
     static const char* names[] = {

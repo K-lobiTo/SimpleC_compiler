@@ -136,6 +136,7 @@ void ast_free(ASTNode *node);
 // Semantic analysis
 void semantic_analyze(ASTNode *node, ScopeStack *symbol_table);
 void ast_print(ASTNode *node, int indent);
+const char* var_type_to_str(VarType type);
 
 // Code generation
 void generate_assembly(ASTNode *node, FILE *out);
