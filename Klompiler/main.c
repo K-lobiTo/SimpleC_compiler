@@ -33,11 +33,13 @@ int main(int argc, char *argv[]) {
 
     printf("Parsing completed successfully!\n\n");
 
-    // Semantic analysis
-    printf("AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST\n");
-    ast_print(program_root, 0);
-    printf("AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST\n\n");
+    // AST
+    // printf("AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST\n");
+    // ast_print(program_root, 0);
+    // printf("AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST ~ AST\n\n");
 
+
+    // Semantic analysis
     printf("Semantic Analysis\n");
     semantic_analyze(program_root, symbol_table);
     printf("End semantic Analysis\n");

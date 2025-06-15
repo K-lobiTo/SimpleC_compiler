@@ -160,7 +160,7 @@ ASTNode *ast_new_compound_statement(int line) {
 ASTNode *ast_add_statement(ASTNode *compound, ASTNode *stmt) {
     // Validate inputs
     if (!compound || !stmt) {
-        compiler_error("Null pointer passed to ast_add_statement");
+        // compiler_error("Null pointer passed to ast_add_statement");
         return NULL;
     }
 

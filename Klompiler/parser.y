@@ -23,6 +23,7 @@ ASTNode *program_root = NULL;
 ScopeStack *symbol_table = NULL;
 
 ASTNode *current_compound = NULL;
+
 %}
 
 %define parse.error verbose
@@ -65,6 +66,7 @@ ASTNode *current_compound = NULL;
 %type <node> multiplicative_expression postfix_expression unary_expression primary_expression
 
 %%
+
 
 program:
     program_start
@@ -113,6 +115,21 @@ declaration:
         $$->is_constant = ($1 != NULL); 
         free($3);
     }
+    |  error SEMICOLON {
+        yyerrok;
+        fprintf(stderr, "Skipping invalid declaration at line %d\n", yylineno);
+        $$ = NULL;
+    }
+    | declaration_prefix type_specifier error SEMICOLON {
+        yyerrok;
+        fprintf(stderr, "Skipping invalid declaration at line %d\n", yylineno);
+        $$ = NULL;
+    }
+    | declaration_prefix type_specifier IDENTIFIER error {
+        yyerrok;
+        fprintf(stderr, "Skipping invalid declaration [semicolon missing] at line %d\n", yylineno);
+        $$ = NULL;
+    }
     ;
 
 declaration_prefix:
@@ -140,11 +157,12 @@ statement:
     | selection_statement { $$ = $1; }
     | iteration_statement { $$ = $1; }
     | jump_statement { $$ = $1; }
-    | error SEMICOLON {
+    /* | error SEMICOLON {
+        skip_to_semicolon();
         yyerrok;
         fprintf(stderr, "Error recovered at line %d\n", yylineno);
         $$ = NULL;
-    }
+    } */
     ;
 
 expression_statement:
@@ -155,7 +173,12 @@ expression_statement:
 compound_statement:
     LBRACE statement_list RBRACE {
         $$ = $2;
-     }
+    }
+    | LBRACE error RBRACE {
+        yyerrok;
+        fprintf(stderr, "Skipping invalid block at line %d\n", yylineno);
+        $$ = ast_new_compound_statement(yylineno); //maybe is better set at NULL
+    }
     ;
 
 statement_list:
@@ -190,6 +213,11 @@ iteration_statement:
         ast_add_statement($8, $3);
         $$ = ast_new_for($3, $4, $6, $8, yylineno); 
     }
+    | FOR LPAREN error RPAREN compound_statement {
+        yyerrok;
+        fprintf(stderr, "Skipping invalid for loop at line %d\n", yylineno);
+        $$ = NULL;
+    }
     ;
 
 for_init:
@@ -210,6 +238,11 @@ jump_statement:
 
 expression:
     assignment_expression { $$ = $1; }
+    | error SEMICOLON {
+        yyerrok;
+        fprintf(stderr, "Skipping invalid expression at line %d\n", yylineno);
+        $$ = NULL;
+    }
     ;
 
 assignment_expression:
@@ -433,3 +466,4 @@ void yyerror(const char *msg) {
     }
     last_expected = NULL;
 }
+

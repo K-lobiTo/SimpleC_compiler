@@ -15,5 +15,10 @@ int main() {
             a+=j;
         }
     }
+    int bad
+    unsigned long stillbad;
+    const int good;
+
+    for(badfor){int thisdoesntmatter;}
     int x = global + 1;
 }
