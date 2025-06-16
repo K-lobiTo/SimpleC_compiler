@@ -15,15 +15,14 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Open the input file
     FILE* input = fopen(argv[1], "r");
-    FILE* output = fopen("output.asm", "w");
     if (!input) {
         perror("Error opening input file");
         return 1;
     }
 
     yyin = input;
+
     // Parse the input file
     if (yyparse() != 0) {
         fprintf(stderr, "Parsing failed at line %d\n", yylineno);
@@ -44,6 +43,8 @@ int main(int argc, char *argv[]) {
     semantic_analyze(program_root, symbol_table);
     printf("End semantic Analysis\n");
 
+    // Assembly gen
+    FILE* output = fopen("output.asm", "w");
     generate_assembly(program_root, output);
     
     

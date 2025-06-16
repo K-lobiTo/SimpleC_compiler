@@ -10,7 +10,6 @@
 
 extern int yylex();
 
-#include "ast.h"
 extern int yylineno;
 void yyerror(const char *msg);
 const char *token_name(int token);
@@ -18,7 +17,6 @@ const char *token_name(int token);
 extern int yychar;
 static const char *last_expected = NULL;
 
-// Global AST root and symbol table
 ASTNode *program_root = NULL;
 ScopeStack *symbol_table = NULL;
 
@@ -84,7 +82,7 @@ program:
     ;
 
 program_start:
-    {   // Initialization of the symbol table here 
+    {   // Here the art begins (Scopes and AST)
         symbol_table = create_scope_stack(10);
         program_root = ast_new_program(symbol_table);
         if (!program_root) {
@@ -157,12 +155,6 @@ statement:
     | selection_statement { $$ = $1; }
     | iteration_statement { $$ = $1; }
     | jump_statement { $$ = $1; }
-    /* | error SEMICOLON {
-        skip_to_semicolon();
-        yyerrok;
-        fprintf(stderr, "Error recovered at line %d\n", yylineno);
-        $$ = NULL;
-    } */
     ;
 
 expression_statement:
@@ -177,14 +169,13 @@ compound_statement:
     | LBRACE error RBRACE {
         yyerrok;
         fprintf(stderr, "Skipping invalid block at line %d\n", yylineno);
-        $$ = ast_new_compound_statement(yylineno); //maybe is better set at NULL
+        $$ = ast_new_compound_statement(yylineno); //maybe is better set at NULL (hopefully no)
     }
     ;
 
 statement_list:
     statement_list statement {
         if (!$1) {
-            // First statement - create new compound
             $$ = ast_new_compound_statement(yylineno);
         } else {
             $$ = $1;
@@ -192,7 +183,7 @@ statement_list:
         ast_add_statement($$, $2);
     }
     | /* empty */ {
-        $$ = NULL;  // Explicit empty list
+        $$ = NULL;
     }
     ;
 
@@ -393,13 +384,21 @@ const char *token_name(int token) {
     switch (token) {
         /* Keywords */
         case INT: return "'int'";
+        case FLOAT: return "'int'";
+        case LONG: return "'LONG'";
+        case LONGLONG: return "'int'";
+        case LONGDOUBLE: return "'int'";
+        case DOUBLE: return "'int'";
         case MAIN: return "'main'";
         case IF: return "'if'";
         case ELSE: return "'else'";
         case WHILE: return "'while'";
         case FOR: return "'for'";
-        case BREAK: return "'break'";
         case RETURN: return "'return'";
+        case UNSIGNED: return "'unsigned'";
+        case CONST: return "'const'";
+        case CONTINUE: return "'continue'";
+        case BREAK: return "'break'";
         
         /* Identifiers/Literals */
         case IDENTIFIER: return "identifier";

@@ -60,10 +60,10 @@ bool search_in_all_scopes(const ScopeStack *stack, const char *symbol) {
     assert(stack->top >= 0);
     for (int i = stack->top; i >= 0; i--) {
         if (stack->scopes[i] && trie_search(stack->scopes[i], symbol)) {
-            return true;  // Found in some scope
+            return true;
         }
     }
-    return false;  // Not found
+    return false;
 }
 
 bool search_in_current_scope(const ScopeStack *stack, const char *symbol) {

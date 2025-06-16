@@ -1,12 +1,12 @@
 #ifndef STACK_OF_TRIES_H
 #define STACK_OF_TRIES_H
 
-#include "trie.h"  // Your existing trie implementation
+#include "trie.h" 
 
 typedef struct ScopeStack {
-    TrieNode **scopes;  // Array of tries (each representing a scope)
-    int top;            // Current scope depth
-    int capacity;       // Max capacity
+    TrieNode **scopes;
+    int top;
+    int capacity;
 } ScopeStack;
 
 // Stack operations

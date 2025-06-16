@@ -1,4 +1,3 @@
-// ast.h
 #ifndef AST_H
 #define AST_H
 
@@ -73,7 +72,7 @@ typedef struct ASTNode {
     ScopeStack *symbol_table;
     
     union {
-        // For literals and identifiers
+        // literals and identifiers
         struct {
             char *string_value;
             long long int_value;
@@ -81,14 +80,14 @@ typedef struct ASTNode {
             char char_value;
         };
         
-        // For binary/unary operations
+        // binary/unary operations
         struct {
             OperatorType op;
             struct ASTNode *left;
             struct ASTNode *right;
         };
         
-        // For control structures
+        // control structures
         struct {
             struct ASTNode *cond;
             struct ASTNode *then_part;
@@ -97,7 +96,7 @@ typedef struct ASTNode {
             struct ASTNode *step;
         };
         
-        // For declarations
+        // declarations
         struct {
             char *var_name;
             int var_type;
@@ -105,7 +104,7 @@ typedef struct ASTNode {
             struct ASTNode *init_value;
         };
         
-        // For compound statements
+        // compound statements
         struct {
             struct ASTNode **children;
             size_t children_count;

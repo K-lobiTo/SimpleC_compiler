@@ -16,6 +16,6 @@ parser.tab.c parser.tab.h: parser.y
 	$(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -f *.o compiler lexer.yy.c parser.tab.c parser.tab.h output.asm
+	rm -f *.o compiler lexer.yy.c lex.yy.c parser.tab.c parser.tab.h output.asm 
 
 .PHONY: all clean

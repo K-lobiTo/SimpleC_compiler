@@ -1,4 +1,3 @@
-// ast.c
 #include "ast.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -158,7 +157,6 @@ ASTNode *ast_new_compound_statement(int line) {
 }
 
 ASTNode *ast_add_statement(ASTNode *compound, ASTNode *stmt) {
-    // Validate inputs
     if (!compound || !stmt) {
         // compiler_error("Null pointer passed to ast_add_statement");
         return NULL;
@@ -169,19 +167,16 @@ ASTNode *ast_add_statement(ASTNode *compound, ASTNode *stmt) {
         return NULL;
     }
 
-    // Calculate new size
     size_t new_size = compound->children_count + 1;
     
-    // Reallocate memory
     ASTNode **new_children = realloc(compound->children, new_size * sizeof(ASTNode *));
     if (!new_children) {
         compiler_error("Memory allocation failed in ast_add_statement");
         return NULL;
     }
 
-    // Update structure
     compound->children = new_children;
-    compound->children[compound->children_count] = stmt;  // Note: no -1 here
+    compound->children[compound->children_count] = stmt;
     compound->children_count = new_size;
     
     return compound;
@@ -196,7 +191,7 @@ ASTNode *ast_new_continue(int line) {
 
     node->type = NODE_CONTINUE;
     node->line_number = line;
-    node->symbol_table = NULL;  // Continue doesn't need symbol table
+    node->symbol_table = NULL;
     
     return node;
 }
@@ -210,7 +205,7 @@ ASTNode *ast_new_break(int line) {
 
     node->type = NODE_BREAK;
     node->line_number = line;
-    node->symbol_table = NULL;  // Break doesn't need symbol table context
+    node->symbol_table = NULL;
     
     return node;
 }
@@ -224,10 +219,9 @@ ASTNode *ast_new_return(ASTNode *expr, int line) {
 
     node->type = NODE_RETURN;
     node->line_number = line;
-    node->symbol_table = NULL;  // Return doesn't need its own symbol table
+    node->symbol_table = NULL;
     
-    // Store the return expression (can be NULL for empty returns)
-    node->left = expr;  // Using left child for the return expression
+    node->left = expr;  // Using left child for the return expression!!!!!
     
     return node;
 }
@@ -274,11 +268,11 @@ void ast_free(ASTNode *node) {
             break;
             
         case NODE_RETURN:
-            ast_free(node->left); // Return expression
+            ast_free(node->left);
             break;
             
         default:
-            // For simple nodes like INTEGER, FLOAT, CHAR
+            // For simple nodes
             break;
     }
     
@@ -295,7 +289,6 @@ void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
     }
     assert(symbol_table);
     
-    // Set symbol table reference for all nodes
     node->symbol_table = symbol_table;
     
     if(node->type<NODE_PROGRAM || node->type>NODE_CONTINUE){
@@ -351,9 +344,9 @@ void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
             for (size_t i = 0; i < node->children_count; i++) {
                 semantic_analyze(node->children[i], symbol_table);
             }
-            if(symbol_table->top==0)break; // keeping global until the end of the program
+            if(symbol_table->top==0)break; 
             printf("Leaving scope (depth: %d)\n", scope_depth--);
-            print_trie(symbol_table->scopes[symbol_table->top]); // Print before popping
+            print_trie(symbol_table->scopes[symbol_table->top]); 
             pop_scope(symbol_table);
             break;
         }
@@ -365,8 +358,8 @@ void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
             }
             if(symbol_table->top==0){
                 printf("Leaving global scope (depth: %d)\n", scope_depth--);
-                print_trie(symbol_table->scopes[symbol_table->top]); // printing global scope
-                pop_scope(symbol_table); //poping global scope
+                print_trie(symbol_table->scopes[symbol_table->top]);
+                pop_scope(symbol_table);
             }
             
             break;
@@ -391,19 +384,15 @@ void semantic_analyze(ASTNode *node, ScopeStack *symbol_table) {
             
         case NODE_FOR:
             push_scope(symbol_table);
-            // printf("Entering FOR scope (depth: %d)\n", symbol_table->top + 1);
             semantic_analyze(node->init, symbol_table);
             semantic_analyze(node->cond, symbol_table);
             semantic_analyze(node->step, symbol_table);
             semantic_analyze(node->then_part, symbol_table);
-            // printf("Leaving FOR (depth: %d)\n", symbol_table->top + 1);
-            // print_trie(symbol_table->scopes[symbol_table->top]);
             pop_scope(symbol_table);
             break;
             
             
         default:
-            // Recursively analyze children
             if(node->left)semantic_analyze(node->left, symbol_table);
             if(node->left)semantic_analyze(node->right, symbol_table);
             break;
@@ -426,7 +415,6 @@ const char* var_type_to_str(VarType type) {
         [TYPE_STR] = "char*"
     };
 
-    // Handle invalid type values gracefully
     if (type >= 0 && type < sizeof(names)/sizeof(names[0])) {
         return names[type];
     }
@@ -493,7 +481,7 @@ const char* operator_to_string(OperatorType op) {
 }
 
 void ast_print(ASTNode *node, int indent) {
-    // Safety check for infinite recursion
+    // Just in case limit for really big ASTs
     if (indent > 20) {
         printf("%*sMAX DEPTH REACHED\n", indent*4, "");
         return;
@@ -504,11 +492,9 @@ void ast_print(ASTNode *node, int indent) {
         return;
     }
 
-    // Print node header
     printf("%*s%s @%p (line %d)", indent*4, "", 
            node_type_to_str(node->type), node, node->line_number);
 
-    // Print node-specific details
     switch (node->type) {
         case NODE_IDENTIFIER:
             printf(" '%s'", node->string_value);
@@ -565,7 +551,6 @@ void ast_print(ASTNode *node, int indent) {
     }
     printf("\n");
 
-    // Print children with clear relationship indicators
     switch (node->type) {
         case NODE_BINARY_OP:
             printf("%*sleft:\n", (indent+1)*4, "");
@@ -637,7 +622,7 @@ void ast_print(ASTNode *node, int indent) {
             break;
 
         default:
-            // No children to print for other node types
+            // No children to print
             break;
     }
 }
@@ -804,7 +789,6 @@ void generate_assembly(ASTNode *node, FILE *out) {
                 case OP_POST_DEC:
                 case OP_INC:
                 case OP_DEC:
-                    // These should be handled by NODE_UNARY_OP
                     fprintf(stderr, "Error: Binary operator %d should be unary\n", node->op);
                     break;
                 default:
@@ -892,24 +876,20 @@ void generate_assembly(ASTNode *node, FILE *out) {
             int start_label = label_counter++;
             int end_label = label_counter++;
             
-            // Initialization
             if (node->init) {
                 generate_assembly(node->init, out);
             }
             
             fprintf(out, "L%d:\n", start_label);
             
-            // Condition
             if (node->cond) {
                 generate_assembly(node->cond, out);
                 fprintf(out, "  cmp $0, %%eax\n");
                 fprintf(out, "  je L%d\n", end_label);
             }
             
-            // Body
             generate_assembly(node->then_part, out);
             
-            // Step
             if (node->step) {
                 generate_assembly(node->step, out);
             }
@@ -935,13 +915,10 @@ void generate_assembly(ASTNode *node, FILE *out) {
             break;
             
         case NODE_BREAK:
-            // This would need to know the end label of the current loop
-            // Implemented via a stack of loop contexts in a real compiler
             fprintf(out, "  jmp L%d  # break\n", label_counter-1);
             break;
             
         case NODE_CONTINUE:
-            // Similarly needs loop context
             fprintf(out, "  jmp L%d  # continue\n", label_counter-2);
             break;
             

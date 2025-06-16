@@ -1,4 +1,3 @@
-//trie.c
 #include <assert.h>
 #include "trie.h"
 #include "ast.h"
@@ -7,7 +6,6 @@
 #include <string.h>
 #include <ctype.h>
 
-// Create a new trie node
 TrieNode* trie_create_node(void) {
     TrieNode *node = (TrieNode*)malloc(sizeof(TrieNode));
     if (node) {
@@ -19,7 +17,6 @@ TrieNode* trie_create_node(void) {
     return node;
 }
 
-// Convert character to trie index (case-sensitive)
 int char_to_index(char c) {
     if (c >= 'a' && c <= 'z') {
         return c - 'a'; // 0-25
@@ -36,7 +33,6 @@ int char_to_index(char c) {
     return -1; // Invalid character
 }
 
-// Insert a key into the trie
 void trie_insert(TrieNode *root, const char *key, bool is_cons, const int type, const int line) {
     TrieNode *current = root;
     for (int i = 0; key[i] != '\0'; i++) {
@@ -45,7 +41,7 @@ void trie_insert(TrieNode *root, const char *key, bool is_cons, const int type, 
         
         if (!current->children[index]) {
             current->children[index] = trie_create_node();
-            if (!current->children[index]) return; // Allocation failed
+            if (!current->children[index]) return; // this shouldn't happen but just in case
         }
         current = current->children[index];
     }
@@ -57,7 +53,7 @@ void trie_insert(TrieNode *root, const char *key, bool is_cons, const int type, 
 
 
 
-// Search for a key in the trie (return the Node)
+// Search for a key (return the Node)
 TrieNode* trie_search_node(TrieNode *root, const char *key){
     TrieNode *current = root;
     for (int i = 0; key[i] != '\0'; i++) {
@@ -73,7 +69,6 @@ TrieNode* trie_search_node(TrieNode *root, const char *key){
 
 }
 
-// Search for a key in the trie
 bool trie_search(TrieNode *root, const char *key) {
     TrieNode *current = trie_search_node(root, key);
     return inTrie(current);
@@ -87,7 +82,6 @@ bool inTrieConst(TrieNode *node){
 }
 
 
-// Free trie memory
 void trie_free(TrieNode *root) {
     if (!root) return;
     assert(root);
@@ -100,14 +94,12 @@ void trie_free(TrieNode *root) {
     free(root);
 }
 
-// Helper function for recursive printing
 static void print_trie_helper(TrieNode *node, char *buffer, int depth) {
     if (node == NULL){
         printf("it was null\n");
         return;
     }
 
-    // If this node marks the end of a word, print it
     if (node->is_end_of_word) {
         buffer[depth] = '\0';
         printf("%-15s line:%-5d type:%-12s %-9s\n", 
@@ -117,10 +109,8 @@ static void print_trie_helper(TrieNode *node, char *buffer, int depth) {
         node->is_constant ? "constant" : "variable");
     }
 
-    // Recursively print all children
     for (int i = 0; i < TRIE_CHAR_SET_SIZE; i++) {
         if (node->children[i]) {
-            // Determine the character for this index
             char c;
             if (i < 26) c = 'a' + i;               // a-z
             else if (i < 52) c = 'A' + (i - 26);   // A-Z
@@ -133,7 +123,6 @@ static void print_trie_helper(TrieNode *node, char *buffer, int depth) {
     }
 }
 
-// Main function to print the trie
 void print_trie(TrieNode *root) {
     if (root == NULL) {
         printf("(Empty scope)\n\n");
@@ -141,7 +130,7 @@ void print_trie(TrieNode *root) {
     }
 
     printf("---------------- Scope Contents ----------------\n");
-    char buffer[256];  // Adjust size as needed for max variable name length
+    char buffer[256];
     print_trie_helper(root, buffer, 0);
     printf("------------------------------------------------\n\n");
 }

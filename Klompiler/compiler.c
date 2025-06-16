@@ -5,8 +5,6 @@
 #include <stdarg.h>
 
 
-
-
 // Error handling
 static char *last_error = NULL;
 
