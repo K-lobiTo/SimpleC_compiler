@@ -16,7 +16,7 @@ int main() {
         }
     }
     int bad
-    unsigned long stillbad;
+    unsigned long no;
     const int good;
 
     for(badfor){int thisdoesntmatter;}

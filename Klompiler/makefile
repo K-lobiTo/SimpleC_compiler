@@ -3,7 +3,7 @@ CFLAGS = -g -Wall
 
 all: compiler
 
-compiler: lexer.yy.c parser.tab.c compiler.o main.o trie.o stack_of_tries.o ast.o
+compiler: lexer.yy.c parser.tab.c compiler.o main.o trie.o stack_of_tries.o ast.o preprocesador.o
 	$(CC) $(CFLAGS) -o $@ $^
 
 lexer.yy.c: lexer.l parser.tab.h
@@ -16,6 +16,6 @@ parser.tab.c parser.tab.h: parser.y
 	$(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -f *.o compiler lexer.yy.c lex.yy.c parser.tab.c parser.tab.h output.asm 
+	rm -f *.o compiler lexer.yy.c lex.yy.c parser.tab.c parser.tab.h output.asm preprocessed.c
 
 .PHONY: all clean

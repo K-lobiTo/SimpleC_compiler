@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "compiler.h"
+#include "preprocesador.h"
 #include "ast.h"
 
 extern FILE *yyin;
@@ -11,11 +12,20 @@ extern ScopeStack *symbol_table;
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        fprintf(stderr, "Usage: %s <input_file.c>\n", argv[0]);
+        fprintf(stderr, "Uso: %s <input_file_to_preprocess>\n", argv[0]);
         return 1;
     }
 
-    FILE* input = fopen(argv[1], "r");
+    make_preprocess(argv[1], "preprocessed.c");
+    FILE* input = fopen("preprocessed.c", "r");
+    
+    // if (argc != 2) {
+    //     fprintf(stderr, "Usage: %s <input_file.c>\n", argv[0]);
+    //     return 1;
+    // }
+
+    // FILE* input = fopen(argv[1], "r");
+
     if (!input) {
         perror("Error opening input file");
         return 1;
