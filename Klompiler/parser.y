@@ -363,7 +363,8 @@ primary_expression:
         $$ = ast_new_identifier($1, yylineno);
         free($1);
     }
-    | INTEGER { $$ = ast_new_integer($1, yylineno); }
+    | INTEGER { $$ = ast_new_integer($1, yylineno); //printf("Integer taken as %lld\n", $1);
+                }
     | FLOAT_LITERAL { $$ = ast_new_float($1, yylineno); }
     | STRING_LITERAL { $$ = ast_new_string($1, yylineno); free($1); }
     | CHAR_LITERAL { $$ = ast_new_char($1, yylineno); }

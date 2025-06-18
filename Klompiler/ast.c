@@ -44,14 +44,17 @@ ASTNode *ast_new_identifier(char *name, int line) {
 }
 
 ASTNode *ast_new_integer(long long value, int line) {
-    ASTNode *node = malloc(sizeof(ASTNode));
+    ASTNode *node = calloc(1, sizeof(ASTNode));
     if(!node) return NULL;
+    // printf("is Integer %lld\n", value); //
 
     node->type = NODE_INTEGER;
     node->line_number = line;
     node->int_value = value;
     node->left = NULL;
     node->right = NULL;
+    // printf("is Integer in %lld\n", node->int_value); //I found it!
+    // assert(value == node->int_value);
     return node;
 }
 
@@ -631,18 +634,28 @@ void ast_print(ASTNode *node, int indent) {
 
 
 static int label_counter = 0;
+
 void generate_assembly(ASTNode *node, FILE *out) {
     if (!node) return;
     
     switch (node->type) {
         case NODE_PROGRAM:
+            // Data section for global variables
+            fprintf(out, ".data\n");
+            // Generate global variables first
+            
+            // Text section for code
+            fprintf(out, "\n.text\n");
             fprintf(out, ".globl main\n");
             fprintf(out, "main:\n");
             fprintf(out, "  push %%ebp\n");
             fprintf(out, "  mov %%esp, %%ebp\n");
             
+            // Generate non-global declarations and other statements
             for (size_t i = 0; i < node->children_count; i++) {
-                generate_assembly(node->children[i], out);
+                if (node->children[i]->type != NODE_DECLARATION) {
+                    generate_assembly(node->children[i], out);
+                }
             }
             
             fprintf(out, "  mov $0, %%eax\n");
@@ -650,18 +663,19 @@ void generate_assembly(ASTNode *node, FILE *out) {
             fprintf(out, "  ret\n");
             break;
             
-        case NODE_DECLARATION:
-            fprintf(out, "  sub $8, %%esp  # Allocate space for %s\n", node->var_name);
-            if (node->init_value) {
-                generate_assembly(node->init_value, out);
-                fprintf(out, "  mov %%eax, -%d(%%ebp)  # Store %s\n", 
-                        (node->symbol_table->top + 1) * 8, node->var_name);
+        case NODE_DECLARATION: {
+                fprintf(out, "  sub $8, %%esp  # Allocate space for %s\n", node->var_name);
+                if (node->init_value) {
+                    generate_assembly(node->init_value, out);
+                    fprintf(out, "  mov %%eax, -%d(%%ebp)  # Store %s\n", 
+                            (node->symbol_table->top + 1) * 8, node->var_name);
+                }
             }
             break;
             
         case NODE_IDENTIFIER:
-            fprintf(out, "  mov -%d(%%ebp), %%eax  # Load %s\n", 
-                    (node->symbol_table->top + 1) * 8, node->string_value);
+            fprintf(out, "  mov -%d(%%ebp), %%eax  # Load variable %s\n", 
+                    (node->symbol_table->top + 1) * 8, node->string_value); // node->varname
             break;
             
         case NODE_INTEGER:
@@ -857,20 +871,33 @@ void generate_assembly(ASTNode *node, FILE *out) {
         }
             
         case NODE_WHILE: {
+            // printf("It goes in while\n");
             int start_label = label_counter++;
             int end_label = label_counter++;
             
             fprintf(out, "L%d:\n", start_label);
-            generate_assembly(node->cond, out);
-            fprintf(out, "  cmp $0, %%eax\n");
-            fprintf(out, "  je L%d\n", end_label);
             
-            generate_assembly(node->then_part, out);
-            fprintf(out, "  jmp L%d\n", start_label);
-            
-            fprintf(out, "L%d:\n", end_label);
-            break;
-        }
+            // Handle constant conditions directly
+            if (node->cond->type == NODE_INTEGER) {
+                // printf("It goes in if\n");
+                // printf("val %lld\n", node->cond->int_value);
+                if (node->cond->int_value != 0) {
+                    // Infinite loop case (while(1))
+                    generate_assembly(node->then_part, out);
+                    fprintf(out, "  jmp L%d\n", start_label);
+                    fprintf(out, "L%d:\n", end_label);
+                }
+            } else {
+                // printf("It goes in else\n");
+                generate_assembly(node->cond, out);
+                fprintf(out, "  cmp $0, %%eax\n");
+                fprintf(out, "  je L%d\n", end_label);
+                generate_assembly(node->then_part, out);
+                fprintf(out, "  jmp L%d\n", start_label);
+                fprintf(out, "L%d:\n", end_label);
+                }
+                break;
+            }
             
         case NODE_FOR: {
             int start_label = label_counter++;

@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
     printf("End semantic Analysis\n");
 
     // Assembly gen
-    FILE* output = fopen("output.asm", "w");
+    FILE* output = fopen("output.s", "w");
     generate_assembly(program_root, output);
     
     
